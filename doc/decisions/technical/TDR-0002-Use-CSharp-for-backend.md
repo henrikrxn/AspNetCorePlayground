@@ -2,7 +2,7 @@
 
 ## Context: Programming language
 
-The backend will be in C#, starting with .NET 5 and moving to .NET 6 as soon as that is released as LTS.
+The backend will be in C#, starting with .NET 7 and moving to .NET 8 as soon as that is released as LTS.
 
 ## Decisions
 
@@ -10,7 +10,7 @@ The backend will be in C#, starting with .NET 5 and moving to .NET 6 as soon as 
 
 ### Rationale
 
-C# is what I have used professionally for the last 10 years and the backend is not where I want to experiment with this project.
+C# is what I have used professionally for the last 15 years and the backend is not where I want to experiment with this project.
 
 ## Status
 
