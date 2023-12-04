@@ -4,14 +4,27 @@ using Xunit.Abstractions;
 
 namespace ResumeService.WebApi.HttpIntegration;
 
+[Collection(ResumeAppCollection.Name)]
 public class ApiTests
 {
+    public ApiTests(HttpTestFixture fixture, ITestOutputHelper outputHelper)
+    {
+        Fixture = fixture;
+
+        // Route output from the fixture's logs to xunit's output
+        OutputHelper = outputHelper;
+        Fixture.SetOutputHelper(OutputHelper);
+    }
+
+    private HttpTestFixture Fixture { get; }
+
+    private ITestOutputHelper OutputHelper { get; }
+
     [Fact]
     public async Task WhenCallingWeatherForecast_ThenWeAlwaysGetFiveForecasts()
     {
         // Arrange
-        await using var fixture = new HttpTestFixture();
-        using var client = fixture.CreateClient();
+        using var client = Fixture.CreateClient();
 
         // Act
         var forecasts = await client.GetFromJsonAsync<WeatherForecast[]>("/weatherforecast");
@@ -19,7 +32,6 @@ public class ApiTests
         // Assert
         forecasts.Should().NotBeNull();
         forecasts.Should().HaveCount(5);
-
     }
 
     // Duplicating instead of referencing the one in the ResumeService in order to test the "contract" not the existing implementation

@@ -7,7 +7,6 @@ using Xunit.Abstractions;
 
 namespace ResumeService.WebApi.HttpIntegration;
 
-// TODO Look into making this internal
 public class HttpTestFixture : WebApplicationFactory<Program>, ITestOutputHelperAccessor
 {
     public ITestOutputHelper? OutputHelper { get; set; }
