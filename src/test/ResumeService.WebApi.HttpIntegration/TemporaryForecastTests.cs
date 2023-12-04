@@ -25,6 +25,8 @@ public class ApiTests
     {
         // Arrange
         using var client = Fixture.CreateClient();
+        var webHostEnvironment = Fixture.Services.GetRequiredService<IWebHostEnvironment>();
+        OutputHelper.WriteLine("Environment: {0}", webHostEnvironment.EnvironmentName);
 
         // Act
         var forecasts = await client.GetFromJsonAsync<WeatherForecast[]>("/weatherforecast");

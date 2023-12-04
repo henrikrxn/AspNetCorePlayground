@@ -1,8 +1,5 @@
 ﻿using MartinCostello.Logging.XUnit;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using Xunit.Abstractions;
 
 namespace ResumeService.WebApi.HttpIntegration;
@@ -21,28 +18,36 @@ public class HttpTestFixture : WebApplicationFactory<Program>, ITestOutputHelper
         ClientOptions.BaseAddress = new Uri("https://localhost");
         // Do not follow redirects so they can tested explicitly
         ClientOptions.AllowAutoRedirect = false;
-
-        //     private readonly string _environment;
-        // _environment = environment;
     }
 
-    protected override IHost CreateHost(IHostBuilder builder)
+    protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
-        builder.UseEnvironment("Development");
-        // builder.UseEnvironment(_environment);
-
         builder.ConfigureLogging(logging =>
-         {
-             logging.ClearProviders();
-             logging.AddXUnit(this);
-         });        
+        {
+            // TODO DO we want to do this?
+            // logging.ClearProviders();
+            logging.AddXUnit(this);
+            logging.AddConsole();
+            /*
+            logging.AddSerilog((context, services, configuration) =>
+            {
+
+            });
+            */
+        });
 
         // Add mock/test services to the builder here
         builder.ConfigureServices(services =>
         {
-
+            // TODO
         });
 
+        // Must be after defaults are configured
+        builder.UseEnvironment("KnockKnock");
+    }
+
+    protected override IHost CreateHost(IHostBuilder builder)
+    {
         return base.CreateHost(builder);
     }
 }
