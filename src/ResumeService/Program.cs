@@ -3,26 +3,35 @@ using Serilog;
 using Serilog.Events;
 using System.Diagnostics;
 
-Log.Logger = new LoggerConfiguration()
+// This enables ASP.NET Core HTTP integration tests to set-up Serilog so that it gets logging
+if (Log.Logger == Serilog.Core.Logger.None)
+{
+    Log.Logger = new LoggerConfiguration()
     .MinimumLevel.Override("Microsoft", LogEventLevel.Information)
     .Enrich.FromLogContext()
-    .Enrich.WithEnvironmentName()
+    .Enrich.WithEnvironmentName() // This only looks at the environment variables, which is not good for e.g. HTTP integration tests
     .Enrich.WithMachineName()
     .Enrich.WithProcessId()
-    // If ApplicationInsights needs to be added then the configuration will have to be built first
     .WriteTo.Console(outputTemplate: "[{Timestamp:HH:mm:ss} {Level:u3}] {Message:lj}{NewLine}{Properties:j}{NewLine}{Exception}")
-    // If you want to see the context and added properties, use
-    // outputTemplate: "[{Timestamp:HH:mm:ss} {Level:u3}] {Message:lj}{NewLine}{Properties:j}{NewLine}{Exception}"
-    // as argument for Console() above
     .CreateBootstrapLogger();
-
-Log.Information("Starting up");
+}
+else
+{
+    Log.Information("Logger already set-up. Skipping Bootstrap logger" );
+}
 
 try
 {
+    Log.Information("Creating WebApplication builder");
+
     var builder = WebApplication.CreateBuilder(args);
 
-    builder.Configuration.AddUserSecrets(typeof(Program).Assembly, optional: true, reloadOnChange: true);
+    Log.Information("Environment: {Environment}", builder.Environment.EnvironmentName);
+
+    if (builder.Environment.IsDevelopment())
+    {
+        builder.Configuration.AddUserSecrets(typeof(Program).Assembly, optional: true, reloadOnChange: true);
+    }
 
     // Logging in general
 
@@ -39,6 +48,7 @@ try
     // Serilog internal debug logging
     if (builder.Environment.IsDevelopment())
     {
+        Log.Information("Setting up Serilog debug logging for development");
         Serilog.Debugging.SelfLog.Enable(msg => Debug.WriteLine(msg));
         Serilog.Debugging.SelfLog.Enable(Console.Error);
     }
@@ -48,24 +58,27 @@ try
         configuration
             .ReadFrom.Configuration(context.Configuration)
             .ReadFrom.Services(services)
-            .Enrich.WithEnvironmentName()
+            .Enrich.WithProperty("EnvironmentName", context.HostingEnvironment.EnvironmentName)
             .Enrich.WithMachineName()
             .Enrich.WithProcessId()
             .Enrich.FromLogContext();
 
-        if (context.HostingEnvironment.IsDevelopment())
+        if (context.HostingEnvironment.IsProduction())
         {
-            configuration.WriteTo.Console(outputTemplate: "[{Timestamp:HH:mm:ss} {Level:u3}] {Message:lj}{NewLine}{Properties:j}{NewLine}{Exception}");
-            // If you want to see the context and added properties, use
-            // outputTemplate: "[{Timestamp:HH:mm:ss} {Level:u3}] {Message:lj}{NewLine}{Properties:j}{NewLine}{Exception}"
-            // as argument for Console() above
-        }
-        else
-        {
+            Log.Information("Setting up Serilog for production");
             // If console is deemed in Azure environments there it is probably a good idea to add
             // https://nuget.org/packages/serilog.sinks.async
             // as console historically has been known to slow things down a lot
             configuration.WriteTo.Console(restrictedToMinimumLevel: LogEventLevel.Error); // Console is terribly ineffective, so limiting to the really bad stuff
+        }
+        else
+        {
+            Log.Information("Setting up Serilog for Environment: '{Environment}'", context.HostingEnvironment.EnvironmentName);
+
+            configuration.WriteTo.Console(outputTemplate: "[{Timestamp:HH:mm:ss} {Level:u3}] {Message:lj}{NewLine}{Properties:j}{NewLine}{Exception}");
+            // If you want to see the context and added properties, use
+            // outputTemplate: "[{Timestamp:HH:mm:ss} {Level:u3}] {Message:lj}{NewLine}{Properties:j}{NewLine}{Exception}"
+            // as argument for Console() above
         }
     }, writeToProviders: true);
 
@@ -74,7 +87,13 @@ try
     builder.Services.AddEndpointsApiExplorer();
     builder.Services.AddSwaggerGen();
 
+    Log.Information("Building application");
+
     var app = builder.Build();
+
+    Log.Information("Environment: {Environment}", builder.Environment.EnvironmentName);
+
+    Log.Information("Adding middleware");
 
     // Configure the HTTP request pipeline.
     if (app.Environment.IsDevelopment())
@@ -88,10 +107,7 @@ try
     // The normal Microsoft request logging
     app.UseHttpLogging();
 
-    var summaries = new[]
-    {
-    "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-};
+    string[] summaries = [ "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching" ];
 
     app.MapGet("/weatherforecast", () =>
     {
@@ -107,6 +123,8 @@ try
     })
     .WithName("GetWeatherForecast")
     .WithOpenApi();
+
+    Log.Information("Starting application");
 
     app.Run();
 
