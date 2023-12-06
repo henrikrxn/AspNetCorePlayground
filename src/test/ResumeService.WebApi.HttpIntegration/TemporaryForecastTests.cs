@@ -1,5 +1,4 @@
 using FluentAssertions;
-using System.Net.Http.Json;
 using Xunit.Abstractions;
 
 namespace ResumeService.WebApi.HttpIntegration;
@@ -26,7 +25,7 @@ public class ApiTests
         // Arrange
         using var client = Fixture.CreateClient();
         var webHostEnvironment = Fixture.Services.GetRequiredService<IWebHostEnvironment>();
-        OutputHelper.WriteLine("Environment: {0}", webHostEnvironment.EnvironmentName);
+        OutputHelper.WriteLine("Test code: Environment={0}", webHostEnvironment.EnvironmentName);
 
         // Act
         var forecasts = await client.GetFromJsonAsync<WeatherForecast[]>("/weatherforecast");
