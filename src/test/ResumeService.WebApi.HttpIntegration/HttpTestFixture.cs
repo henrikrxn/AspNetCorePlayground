@@ -1,6 +1,7 @@
 ﻿using MartinCostello.Logging.XUnit;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
+using ResumeService.Plumbing;
 using Serilog;
 using Serilog.Core;
 using Serilog.Events;
@@ -39,8 +40,7 @@ public class HttpTestFixture : WebApplicationFactory<Program>, ITestOutputHelper
         // but before the application is built in Program ?
         OutputHelperSet.WriteLine($"Test code: {nameof(ConfigureWebHost)}");
 
-        // TODO: Centralize the magic string for outputTemplate in a class SerilogSettings or similar
-        var injectableTestOutputSink = new InjectableTestOutputSink(outputTemplate: "[{Timestamp:HH:mm:ss} {Level:u3}] {Message:lj}{NewLine}{Properties:j}{NewLine}{Exception}");
+        var injectableTestOutputSink = new InjectableTestOutputSink(outputTemplate: SerilogTemplates.IncludesProperties);
         injectableTestOutputSink.Inject(OutputHelperSet);
 
         builder.UseEnvironment(EnvironmentName);
@@ -49,7 +49,7 @@ public class HttpTestFixture : WebApplicationFactory<Program>, ITestOutputHelper
         Log.Logger = new LoggerConfiguration()
                 .MinimumLevel.Override("Microsoft", LogEventLevel.Information)
                 .Enrich.FromLogContext()
-                .Enrich.WithProperty("EnvironmentName", EnvironmentName) // TODO Centralize "EnvironmentName" in a class SerilogProperties
+                .Enrich.WithProperty(SerilogProperties.EnvironmentName, EnvironmentName)
                 .Enrich.WithMachineName()
                 .Enrich.WithProcessId()
                 .WriteTo.InjectableTestOutput(injectableTestOutputSink)
@@ -61,7 +61,7 @@ public class HttpTestFixture : WebApplicationFactory<Program>, ITestOutputHelper
             // Registering the Serilog sink for XUnit in services to that the Serilog configuration in Program picks it up automagically
             services.AddSingleton<ILogEventSink, InjectableTestOutputSink>(sp =>
             {
-                var injectableTestOutputSink = new InjectableTestOutputSink(outputTemplate: "[{Timestamp:HH:mm:ss} {Level:u3}] {Message:lj}{NewLine}{Properties:j}{NewLine}{Exception}");
+                var injectableTestOutputSink = new InjectableTestOutputSink(outputTemplate: SerilogTemplates.IncludesProperties);
                 injectableTestOutputSink.Inject(OutputHelperSet);
                 return injectableTestOutputSink;
             });
