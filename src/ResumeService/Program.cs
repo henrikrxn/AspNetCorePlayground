@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.HttpLogging;
+using ResumeService.Plumbing;
 using Serilog;
 using Serilog.Events;
 using System.Diagnostics;
@@ -58,7 +59,7 @@ try
         configuration
             .ReadFrom.Configuration(context.Configuration)
             .ReadFrom.Services(services)
-            .Enrich.WithProperty("EnvironmentName", context.HostingEnvironment.EnvironmentName)
+            .Enrich.WithProperty(SerilogProperties.EnvironmentName, context.HostingEnvironment.EnvironmentName)
             .Enrich.WithMachineName()
             .Enrich.WithProcessId()
             .Enrich.FromLogContext();
@@ -69,16 +70,13 @@ try
             // If console is deemed in Azure environments there it is probably a good idea to add
             // https://nuget.org/packages/serilog.sinks.async
             // as console historically has been known to slow things down a lot
-            configuration.WriteTo.Console(restrictedToMinimumLevel: LogEventLevel.Error); // Console is terribly ineffective, so limiting to the really bad stuff
+            configuration.WriteTo.Console(outputTemplate: SerilogTemplates.IncludesProperties, restrictedToMinimumLevel: LogEventLevel.Error); // Console is terribly ineffective, so limiting to the really bad stuff
         }
         else
         {
             Log.Information("Setting up Serilog for Environment: '{Environment}'", context.HostingEnvironment.EnvironmentName);
 
-            configuration.WriteTo.Console(outputTemplate: "[{Timestamp:HH:mm:ss} {Level:u3}] {Message:lj}{NewLine}{Properties:j}{NewLine}{Exception}");
-            // If you want to see the context and added properties, use
-            // outputTemplate: "[{Timestamp:HH:mm:ss} {Level:u3}] {Message:lj}{NewLine}{Properties:j}{NewLine}{Exception}"
-            // as argument for Console() above
+            configuration.WriteTo.Console(outputTemplate: SerilogTemplates.IncludesProperties);
         }
     }, writeToProviders: true);
 
