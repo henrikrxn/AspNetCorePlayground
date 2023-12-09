@@ -1,20 +1,21 @@
 using Microsoft.AspNetCore.HttpLogging;
+using ResumeService;
 using ResumeService.Plumbing;
 using Serilog;
 using Serilog.Events;
 using System.Diagnostics;
 
-// This enables ASP.NET Core HTTP integration tests to set-up Serilog so that it gets logging
+// This enables ASP.NET Core HTTP integration tests to set-up Serilog so that tests gets logging
 if (Log.Logger == Serilog.Core.Logger.None)
 {
     Log.Logger = new LoggerConfiguration()
-    .MinimumLevel.Override("Microsoft", LogEventLevel.Information)
-    .Enrich.FromLogContext()
-    .Enrich.WithEnvironmentName() // This only looks at the environment variables, which is not good for e.g. HTTP integration tests
-    .Enrich.WithMachineName()
-    .Enrich.WithProcessId()
-    .WriteTo.Console(outputTemplate: "[{Timestamp:HH:mm:ss} {Level:u3}] {Message:lj}{NewLine}{Properties:j}{NewLine}{Exception}")
-    .CreateBootstrapLogger();
+        .MinimumLevel.Override("Microsoft", LogEventLevel.Information)
+        .Enrich.FromLogContext()
+        .Enrich.WithEnvironmentName() // This only looks at the environment variables, which is not good for e.g. HTTP integration tests
+        .Enrich.WithMachineName()
+        .Enrich.WithProcessId()
+        .WriteTo.Console(outputTemplate: "[{Timestamp:HH:mm:ss} {Level:u3}] {Message:lj}{NewLine}{Properties:j}{NewLine}{Exception}")
+        .CreateBootstrapLogger();
 }
 else
 {
@@ -78,7 +79,7 @@ try
 
             configuration.WriteTo.Console(outputTemplate: SerilogTemplates.IncludesProperties);
         }
-    }, writeToProviders: true);
+    }, writeToProviders: !builder.Environment.IsEnvironment(MyAdditionalEnvironments.HttpIntegrationTest));
 
     // Add services to the container.
     // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
