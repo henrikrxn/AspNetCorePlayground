@@ -17,7 +17,7 @@ public class HttpTestFixture : WebApplicationFactory<Program>, ITestOutputHelper
 {
     public ITestOutputHelper? OutputHelper { get; set; }
 
-    private readonly string EnvironmentName = "HttpIntegrationTest";
+    private readonly string TestEnvironmentName = MyAdditionalEnvironments.HttpIntegrationTest;
 
     private ITestOutputHelper OutputHelperSet => OutputHelper ?? throw new NullReferenceException(nameof(OutputHelper));
 
@@ -40,16 +40,16 @@ public class HttpTestFixture : WebApplicationFactory<Program>, ITestOutputHelper
         // but before the application is built in Program ?
         OutputHelperSet.WriteLine($"Test code: {nameof(ConfigureWebHost)}");
 
-        var injectableTestOutputSink = new InjectableTestOutputSink(outputTemplate: SerilogTemplates.IncludesProperties);
+        builder.UseEnvironment(TestEnvironmentName);
+
+        // Set-up Serilog to use XUnit TestOutputHelper. Not injecting this instance because Log.Logger is a bootstrap logger and will be
+        // overwritten during start-up
+        InjectableTestOutputSink injectableTestOutputSink = new (outputTemplate: SerilogTemplates.IncludesProperties);
         injectableTestOutputSink.Inject(OutputHelperSet);
-
-        builder.UseEnvironment(EnvironmentName);
-
-        // Set-up Serilog to use XUnit TestOutputHelper
         Log.Logger = new LoggerConfiguration()
                 .MinimumLevel.Override("Microsoft", LogEventLevel.Information)
                 .Enrich.FromLogContext()
-                .Enrich.WithProperty(SerilogProperties.EnvironmentName, EnvironmentName)
+                .Enrich.WithProperty(SerilogProperties.EnvironmentName, TestEnvironmentName)
                 .Enrich.WithMachineName()
                 .Enrich.WithProcessId()
                 .WriteTo.InjectableTestOutput(injectableTestOutputSink)
@@ -61,7 +61,7 @@ public class HttpTestFixture : WebApplicationFactory<Program>, ITestOutputHelper
             // Registering the Serilog sink for XUnit in services to that the Serilog configuration in Program picks it up automagically
             services.AddSingleton<ILogEventSink, InjectableTestOutputSink>(sp =>
             {
-                var injectableTestOutputSink = new InjectableTestOutputSink(outputTemplate: SerilogTemplates.IncludesProperties);
+                InjectableTestOutputSink injectableTestOutputSink = new (outputTemplate: SerilogTemplates.IncludesProperties);
                 injectableTestOutputSink.Inject(OutputHelperSet);
                 return injectableTestOutputSink;
             });
