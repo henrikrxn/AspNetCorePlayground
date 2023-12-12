@@ -3,11 +3,13 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.9.34321.82
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ResumeService", "ResumeService\ResumeService.csproj", "{C525CC72-6BCA-425C-9F87-14935C7A64C2}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{57388BDF-5BDF-4D3B-8123-CEB2D1F30874}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ResumeService", "src\ResumeService\ResumeService.csproj", "{C525CC72-6BCA-425C-9F87-14935C7A64C2}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ResumeService.WebApi.HttpIntegration", "test\ResumeService.WebApi.HttpIntegration\ResumeService.WebApi.HttpIntegration.csproj", "{CB5B07FA-D3E4-4AF8-B41E-891AF5AF2E8D}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{CD39AE35-F60E-45B4-8C9A-F762E8157E4E}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{57388BDF-5BDF-4D3B-8123-CEB2D1F30874}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -31,6 +33,7 @@ Global
 		SolutionGuid = {74ED05B6-D411-43FF-B385-17D4BA915D72}
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
+		{C525CC72-6BCA-425C-9F87-14935C7A64C2} = {CD39AE35-F60E-45B4-8C9A-F762E8157E4E}
 		{CB5B07FA-D3E4-4AF8-B41E-891AF5AF2E8D} = {57388BDF-5BDF-4D3B-8123-CEB2D1F30874}
 	EndGlobalSection
 EndGlobal
