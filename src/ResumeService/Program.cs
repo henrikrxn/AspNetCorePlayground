@@ -128,10 +128,12 @@ try
     app.Run();
 
     Log.Information("Application stopped normally");
+    return ExitCodes.Ok;
 }
 catch (Exception ex)
 {
     Log.Fatal(ex, "Unhandled problems during application setup and startup");
+    return ExitCodes.Error;
 }
 finally
 {
