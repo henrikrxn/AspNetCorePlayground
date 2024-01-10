@@ -1,4 +1,3 @@
-using FluentAssertions;
 using Xunit.Abstractions;
 
 namespace ResumeService.WebApi.HttpIntegration;
@@ -23,12 +22,12 @@ public class ApiTests
     public async Task WhenCallingWeatherForecast_ThenWeAlwaysGetFiveForecasts()
     {
         // Arrange
-        using var client = Fixture.CreateClient();
-        var webHostEnvironment = Fixture.Services.GetRequiredService<IWebHostEnvironment>();
+        using HttpClient client = Fixture.CreateClient();
+        IWebHostEnvironment webHostEnvironment = Fixture.Services.GetRequiredService<IWebHostEnvironment>();
         OutputHelper.WriteLine("Test code: Environment={0}", webHostEnvironment.EnvironmentName);
 
         // Act
-        var forecasts = await client.GetFromJsonAsync<WeatherForecast[]>("/weatherforecast");
+        WeatherForecast[]? forecasts = await client.GetFromJsonAsync<WeatherForecast[]>("/weatherforecast");
 
         // Assert
         forecasts.Should().NotBeNull();
