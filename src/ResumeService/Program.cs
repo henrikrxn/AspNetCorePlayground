@@ -19,14 +19,14 @@ if (Log.Logger == Serilog.Core.Logger.None)
 }
 else
 {
-    Log.Information("Logger already set-up. Skipping Bootstrap logger" );
+    Log.Information("Logger already set-up. Skipping Bootstrap logger");
 }
 
 try
 {
     Log.Information("Creating WebApplication builder");
 
-    var builder = WebApplication.CreateBuilder(args);
+    WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
     Log.Information("Environment: {Environment}", builder.Environment.EnvironmentName);
 
@@ -55,8 +55,8 @@ try
         Serilog.Debugging.SelfLog.Enable(Console.Error);
     }
 
-    builder.Host.UseSerilog((context, services, configuration) => {
-
+    builder.Host.UseSerilog((context, services, configuration) =>
+    {
         configuration
             .ReadFrom.Configuration(context.Configuration)
             .ReadFrom.Services(services)
@@ -88,7 +88,7 @@ try
 
     Log.Information("Building application");
 
-    var app = builder.Build();
+    using WebApplication app = builder.Build();
 
     Log.Information("Environment: {Environment}", builder.Environment.EnvironmentName);
 
@@ -110,7 +110,7 @@ try
 
     app.MapGet("/weatherforecast", () =>
     {
-        var forecast = Enumerable.Range(1, 5).Select(index =>
+        WeatherForecast[] forecast = Enumerable.Range(1, 5).Select(index =>
             new WeatherForecast
             (
                 DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
