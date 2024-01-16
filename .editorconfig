@@ -103,6 +103,9 @@ csharp_style_pattern_matching_over_as_with_null_check = true:suggestion
 csharp_style_prefer_not_pattern = true:suggestion
 csharp_style_prefer_extended_property_pattern = true:suggestion
 
+# Error on unused return values
+csharp_style_unused_value_expression_statement_preference = discard_variable:error
+
 [*.{cs,vb}]
 dotnet_sort_system_directives_first = true
 
