@@ -32,16 +32,16 @@ try
 
     if (builder.Environment.IsDevelopment())
     {
-        builder.Configuration.AddUserSecrets(typeof(Program).Assembly, optional: true, reloadOnChange: true);
+        _ = builder.Configuration.AddUserSecrets(typeof(Program).Assembly, optional: true, reloadOnChange: true);
     }
 
     // Logging in general
 
     // Clearing the pre-registered providers so we know exactly what has been setup
-    builder.Logging.ClearProviders();
+    _ = builder.Logging.ClearProviders();
 
     // New ASP.NET Core 8 HTTP logging
-    builder.Services.AddHttpLogging(logging =>
+    _ = builder.Services.AddHttpLogging(logging =>
     {
         logging.LoggingFields = HttpLoggingFields.All;
         logging.CombineLogs = true;
@@ -55,9 +55,9 @@ try
         Serilog.Debugging.SelfLog.Enable(Console.Error);
     }
 
-    builder.Host.UseSerilog((context, services, configuration) =>
+    _ = builder.Host.UseSerilog((context, services, configuration) =>
     {
-        configuration
+        _ = configuration
             .ReadFrom.Configuration(context.Configuration)
             .ReadFrom.Services(services)
             .Enrich.WithProperty(SerilogProperties.EnvironmentName, context.HostingEnvironment.EnvironmentName)
@@ -71,20 +71,20 @@ try
             // If console is deemed in Azure environments there it is probably a good idea to add
             // https://nuget.org/packages/serilog.sinks.async
             // as console historically has been known to slow things down a lot
-            configuration.WriteTo.Console(outputTemplate: SerilogTemplates.IncludesProperties, restrictedToMinimumLevel: LogEventLevel.Error); // Console is terribly ineffective, so limiting to the really bad stuff
+            _ = configuration.WriteTo.Console(outputTemplate: SerilogTemplates.IncludesProperties, restrictedToMinimumLevel: LogEventLevel.Error); // Console is terribly ineffective, so limiting to the really bad stuff
         }
         else
         {
             Log.Information("Setting up Serilog for Environment: '{Environment}'", context.HostingEnvironment.EnvironmentName);
 
-            configuration.WriteTo.Console(outputTemplate: SerilogTemplates.IncludesProperties);
+            _ = configuration.WriteTo.Console(outputTemplate: SerilogTemplates.IncludesProperties);
         }
     }, writeToProviders: !builder.Environment.IsEnvironment(MyAdditionalEnvironments.HttpIntegrationTest));
 
     // Add services to the container.
     // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-    builder.Services.AddEndpointsApiExplorer();
-    builder.Services.AddSwaggerGen();
+    _ = builder.Services.AddEndpointsApiExplorer();
+    _ = builder.Services.AddSwaggerGen();
 
     Log.Information("Building application");
 
@@ -97,18 +97,18 @@ try
     // Configure the HTTP request pipeline.
     if (app.Environment.IsDevelopment())
     {
-        app.UseSwagger();
-        app.UseSwaggerUI();
+        _ = app.UseSwagger();
+        _ = app.UseSwaggerUI();
     }
 
-    app.UseHttpsRedirection();
+    _ = app.UseHttpsRedirection();
 
     // The normal Microsoft request logging
-    app.UseHttpLogging();
+    _ = app.UseHttpLogging();
 
     string[] summaries = [ "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching" ];
 
-    app.MapGet("/weatherforecast", () =>
+    _ = app.MapGet("/weatherforecast", () =>
     {
         WeatherForecast[] forecast = Enumerable.Range(1, 5).Select(index =>
             new WeatherForecast
