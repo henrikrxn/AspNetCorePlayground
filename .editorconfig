@@ -23,7 +23,7 @@ insert_final_newline = true
 indent_size = 2
 
 # Xml config files
-[*.{props,targets,ruleset,config,nuspec,resx,vsixmanifest,vsct}]
+[*.{props,targets,ruleset,config,nuspec,resx,vsixmanifest,vsct,runsettings}]
 indent_size = 2
 
 [*.json]
@@ -271,6 +271,7 @@ dotnet_diagnostic.CA1858.severity = warning
 
 # CA2007: Consider calling ConfigureAwait on the awaited task
 dotnet_diagnostic.CA2007.severity = warning
+dotnet_code_quality.CA2007.output_kind = DynamicallyLinkedLibrary
 
 # CA2008: Do not create tasks without passing a TaskScheduler
 dotnet_diagnostic.CA2008.severity = warning
@@ -296,8 +297,8 @@ dotnet_diagnostic.CA2016.severity = warning
 # CA2200: Rethrow to preserve stack details
 dotnet_diagnostic.CA2200.severity = warning
 
-# CA2201: Do not raise reserved exception types
-dotnet_diagnostic.CA2201.severity = warning
+# CA2201: Allow raising reserved exception types
+dotnet_diagnostic.CA2201.severity = none
 
 # CA2208: Instantiate argument exceptions correctly
 dotnet_diagnostic.CA2208.severity = warning
