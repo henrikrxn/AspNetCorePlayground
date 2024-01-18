@@ -1,5 +1,4 @@
-﻿using MartinCostello.Logging.XUnit;
-using Microsoft.AspNetCore.Mvc.Testing;
+using MartinCostello.Logging.XUnit;
 using Microsoft.AspNetCore.TestHost;
 using ResumeService.Plumbing;
 using Serilog;
@@ -9,7 +8,7 @@ using Serilog.Sinks.XUnit.Injectable;
 using Serilog.Sinks.XUnit.Injectable.Extensions;
 using Xunit.Abstractions;
 
-namespace ResumeService.WebApi.HttpIntegration;
+namespace ResumeService.Test.WebApi.HttpIntegration;
 
 // TODO Cleanup debug messages in class as it will be noise later
 
@@ -17,9 +16,11 @@ public class HttpTestFixture : WebApplicationFactory<Program>, ITestOutputHelper
 {
     public ITestOutputHelper? OutputHelper { get; set; }
 
+#pragma warning disable IDE1006 // Naming Styles
     private readonly string TestEnvironmentName = MyAdditionalEnvironments.HttpIntegrationTest;
+#pragma warning restore IDE1006 // Naming Styles
 
-    private ITestOutputHelper OutputHelperSet => OutputHelper ?? throw new NullReferenceException(nameof(OutputHelper));
+    private ITestOutputHelper OutputHelperSet => OutputHelper ?? throw new NullValueMissingInitializeException(nameof(OutputHelper));
 
     public void ClearOutputHelper() => OutputHelper = null;
 
@@ -40,11 +41,11 @@ public class HttpTestFixture : WebApplicationFactory<Program>, ITestOutputHelper
         // but before the application is built in Program ?
         OutputHelperSet.WriteLine($"Test code: {nameof(ConfigureWebHost)}");
 
-        builder.UseEnvironment(TestEnvironmentName);
+        _ = builder.UseEnvironment(TestEnvironmentName);
 
         // Set-up Serilog to use XUnit TestOutputHelper. Not injecting this instance because Log.Logger is a bootstrap logger and will be
         // overwritten during start-up
-        InjectableTestOutputSink injectableTestOutputSink = new (outputTemplate: SerilogTemplates.IncludesProperties);
+        InjectableTestOutputSink injectableTestOutputSink = new(outputTemplate: SerilogTemplates.IncludesProperties);
         injectableTestOutputSink.Inject(OutputHelperSet);
         Log.Logger = new LoggerConfiguration()
                 .MinimumLevel.Override("Microsoft", LogEventLevel.Information)
@@ -56,12 +57,12 @@ public class HttpTestFixture : WebApplicationFactory<Program>, ITestOutputHelper
                 .CreateBootstrapLogger();
 
         // Add mock/test services to the builder here
-        builder.ConfigureServices((webHostBuilderContext, services) =>
+        _ = builder.ConfigureServices((webHostBuilderContext, services) =>
         {
             // Registering the Serilog sink for XUnit in services to that the Serilog configuration in Program picks it up automagically
-            services.AddSingleton<ILogEventSink, InjectableTestOutputSink>(sp =>
+            _ = services.AddSingleton<ILogEventSink, InjectableTestOutputSink>(sp =>
             {
-                InjectableTestOutputSink injectableTestOutputSink = new (outputTemplate: SerilogTemplates.IncludesProperties);
+                InjectableTestOutputSink injectableTestOutputSink = new(outputTemplate: SerilogTemplates.IncludesProperties);
                 injectableTestOutputSink.Inject(OutputHelperSet);
                 return injectableTestOutputSink;
             });
