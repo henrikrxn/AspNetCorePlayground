@@ -1,6 +1,6 @@
 using Xunit.Abstractions;
 
-namespace ResumeService.WebApi.HttpIntegration;
+namespace ResumeService.Test.WebApi.HttpIntegration;
 
 [Collection(ResumeAppCollection.Name)]
 public class ApiTests
@@ -30,10 +30,10 @@ public class ApiTests
         WeatherForecast[]? forecasts = await client.GetFromJsonAsync<WeatherForecast[]>("/weatherforecast");
 
         // Assert
-        forecasts.Should().NotBeNull();
-        forecasts.Should().HaveCount(5);
+        _ = forecasts.Should().NotBeNull();
+        _ = forecasts.Should().HaveCount(5);
     }
 
     // Duplicating instead of referencing the one in the ResumeService in order to test the "contract" not the existing implementation
-    internal record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary);
+    internal sealed record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary);
 }

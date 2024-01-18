@@ -1,7 +1,6 @@
-﻿namespace ResumeService.Plumbing
+namespace ResumeService.Plumbing;
+
+public static class SerilogProperties
 {
-    public static class SerilogProperties
-    {
-        public static readonly string EnvironmentName = "EnvironmentName";
-    }
+    public static readonly string EnvironmentName = "EnvironmentName";
 }
