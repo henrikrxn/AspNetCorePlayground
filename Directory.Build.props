@@ -7,4 +7,17 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Deterministic>true</Deterministic>
   </PropertyGroup>
+
+  <!-- Warnings as errors -->
+  <PropertyGroup>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+  </PropertyGroup>
+
+  <!-- CVE detection-->
+  <PropertyGroup>
+    <NuGetAudit>true</NuGetAudit>
+    <!-- Audit bot direct and transitive dependencies -->
+    <NuGetAuditMode>all</NuGetAuditMode>
+    <NuGetAuditLevel>low</NuGetAuditLevel>
+  </PropertyGroup>
 </Project>
