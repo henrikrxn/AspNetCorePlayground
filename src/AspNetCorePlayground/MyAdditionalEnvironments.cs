@@ -1,4 +1,4 @@
-namespace ResumeService;
+namespace AspNetCorePlayground;
 
 // Environments in addition to the ones from Microsoft.Extensions.Hosting.Environments
 public static class MyAdditionalEnvironments

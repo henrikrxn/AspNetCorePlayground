@@ -1,4 +1,4 @@
-namespace ResumeService.Plumbing;
+namespace AspNetCorePlayground.Plumbing;
 
 public static class SerilogTemplates
 {
