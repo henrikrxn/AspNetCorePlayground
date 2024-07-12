@@ -1,8 +1,8 @@
-# ResumeService
+# AspNetCorePlayground
 
-Spare time project building a resume Web service based on a super-set of the Json resume [schema](https://github.com/jsonresume/resume-schema/blob/master/schema.json).
+Spare time project that does nothing useful except being a playground for experimenting with different ways of doing the same thing
 
-Goals:
+Hoping that I'll have:
 
-- Have example of stuff I need at work every X years and have to do from scratch each time.
-- Have a non-trivial project to use for experiments with programming language, tooling, etc.
+- examples of stuff I need at work every X years and have to do from scratch each time.
+- a project to use for experiments with programming language, tooling, etc.
