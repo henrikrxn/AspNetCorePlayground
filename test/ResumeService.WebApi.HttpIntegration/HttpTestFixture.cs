@@ -1,6 +1,7 @@
+using AspNetCorePlayground;
+using AspNetCorePlayground.Plumbing;
 using MartinCostello.Logging.XUnit;
 using Microsoft.AspNetCore.TestHost;
-using ResumeService.Plumbing;
 using Serilog;
 using Serilog.Core;
 using Serilog.Events;
@@ -62,9 +63,9 @@ public class HttpTestFixture : WebApplicationFactory<Program>, ITestOutputHelper
             // Registering the Serilog sink for XUnit in services to that the Serilog configuration in Program picks it up automagically
             _ = services.AddSingleton<ILogEventSink, InjectableTestOutputSink>(sp =>
             {
-                InjectableTestOutputSink injectableTestOutputSink = new(outputTemplate: SerilogTemplates.IncludesProperties);
-                injectableTestOutputSink.Inject(OutputHelperSet);
-                return injectableTestOutputSink;
+                InjectableTestOutputSink injectableTestOutputSinkInClosure = new(outputTemplate: SerilogTemplates.IncludesProperties);
+                injectableTestOutputSinkInClosure.Inject(OutputHelperSet);
+                return injectableTestOutputSinkInClosure;
             });
         });
     }

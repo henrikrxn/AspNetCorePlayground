@@ -1,9 +1,9 @@
+using System.Diagnostics;
+using AspNetCorePlayground;
+using AspNetCorePlayground.Plumbing;
 using Microsoft.AspNetCore.HttpLogging;
-using ResumeService;
-using ResumeService.Plumbing;
 using Serilog;
 using Serilog.Events;
-using System.Diagnostics;
 
 // This enables ASP.NET Core HTTP integration tests to set-up Serilog so that tests gets logging
 if (Log.Logger == Serilog.Core.Logger.None)
@@ -32,7 +32,7 @@ try
 
     if (builder.Environment.IsDevelopment())
     {
-        _ = builder.Configuration.AddUserSecrets(typeof(Program).Assembly, optional: true, reloadOnChange: true);
+        _ = builder.Configuration.AddUserSecrets(typeof(AspNetCorePlayground.Program).Assembly, optional: true, reloadOnChange: true);
     }
 
     // Logging in general
@@ -109,19 +109,19 @@ try
     string[] summaries = [ "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching" ];
 
     _ = app.MapGet("/weatherforecast", () =>
-    {
-        WeatherForecast[] forecast = Enumerable.Range(1, 5).Select(index =>
-            new WeatherForecast
-            (
-                DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-                Random.Shared.Next(-20, 55),
-                summaries[Random.Shared.Next(summaries.Length)]
-            ))
-            .ToArray();
-        return forecast;
-    })
-    .WithName("GetWeatherForecast")
-    .WithOpenApi();
+        {
+            WeatherForecast[] forecast = Enumerable.Range(1, 5).Select(index =>
+                    new WeatherForecast
+                    (
+                        DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
+                        Random.Shared.Next(-20, 55),
+                        summaries[Random.Shared.Next(summaries.Length)]
+                    ))
+                .ToArray();
+            return forecast;
+        })
+        .WithName("GetWeatherForecast")
+        .WithOpenApi();
 
     Log.Information("Starting application");
 
@@ -141,10 +141,13 @@ finally
     Log.CloseAndFlush();
 }
 
-internal sealed record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
+namespace AspNetCorePlayground
 {
-    public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
-}
+    internal sealed record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
+    {
+        public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
+    }
 
 // Expose the Program class so that WebApplicationFactory<T> can access it
-public partial class Program { }
+    public partial class Program { }
+}
