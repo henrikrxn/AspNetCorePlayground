@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.HttpLogging;
 using Serilog;
 using Serilog.Events;
 
-// This enables ASP.NET Core HTTP integration tests to set-up Serilog so that tests gets logging
+// This enables ASP.NET Core HTTP integration tests to setup Serilog so that tests gets logging
 if (Log.Logger == Serilog.Core.Logger.None)
 {
     Log.Logger = new LoggerConfiguration()
@@ -71,7 +71,9 @@ try
             // If console is deemed in Azure environments there it is probably a good idea to add
             // https://nuget.org/packages/serilog.sinks.async
             // as console historically has been known to slow things down a lot
-            _ = configuration.WriteTo.Console(outputTemplate: SerilogTemplates.IncludesProperties, restrictedToMinimumLevel: LogEventLevel.Error); // Console is terribly ineffective, so limiting to the really bad stuff
+
+            // Console is terribly ineffective, so limiting to the really bad stuff
+            _ = configuration.WriteTo.Console(outputTemplate: SerilogTemplates.IncludesProperties, restrictedToMinimumLevel: LogEventLevel.Error);
         }
         else
         {
