@@ -84,7 +84,7 @@ try
     // Add services to the container.
     // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
     _ = builder.Services.AddEndpointsApiExplorer();
-    _ = builder.Services.AddSwaggerGen();
+    _ = builder.Services.AddOpenApi();
 
     Log.Information("Building application");
 
@@ -94,11 +94,15 @@ try
 
     Log.Information("Adding middleware");
 
+    app.MapOpenApi();
+
     // Configure the HTTP request pipeline.
     if (app.Environment.IsDevelopment())
     {
-        _ = app.UseSwagger();
-        _ = app.UseSwaggerUI();
+        app.UseSwaggerUI(options =>
+        {
+            options.SwaggerEndpoint("/openapi/v1.json", "v1");
+        });
     }
 
     _ = app.UseHttpsRedirection();
