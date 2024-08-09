@@ -1,24 +1,22 @@
 using AspNetCorePlayground;
 using AspNetCorePlayground.Plumbing;
-using MartinCostello.Logging.XUnit;
 using Microsoft.AspNetCore.TestHost;
 using Serilog;
-using Serilog.Core;
 using Serilog.Events;
-using Serilog.Sinks.XUnit.Injectable;
-using Serilog.Sinks.XUnit.Injectable.Extensions;
-using Xunit.Abstractions;
+// TODO using Serilog.Sinks.XUnit.Injectable;
+// TODO using Serilog.Sinks.XUnit.Injectable.Extensions;
 
 namespace ResumeService.Test.WebApi.HttpIntegration;
 
 // TODO Cleanup debug messages in class as it will be noise later
 
-public class HttpTestFixture : WebApplicationFactory<Program>, ITestOutputHelperAccessor // TODO Make my own interface and get rid of dependency
+public class HttpTestFixture : WebApplicationFactory<Program>
 {
     public ITestOutputHelper? OutputHelper { get; set; }
 
 #pragma warning disable IDE1006 // Naming Styles
-    private readonly string TestEnvironmentName = MyAdditionalEnvironments.HttpIntegrationTest;
+    // ReSharper disable once InconsistentNaming
+    private static readonly string TestEnvironmentName = MyAdditionalEnvironments.HttpIntegrationTest;
 #pragma warning restore IDE1006 // Naming Styles
 
     private ITestOutputHelper OutputHelperSet => OutputHelper ?? throw new NullValueMissingInitializeException(nameof(OutputHelper));
@@ -31,7 +29,7 @@ public class HttpTestFixture : WebApplicationFactory<Program>, ITestOutputHelper
     {
         // Use HTTPS by default
         ClientOptions.BaseAddress = new Uri("https://localhost");
-        // Do not follow redirects so they can tested explicitly
+        // Do not follow redirects so that redirects can tested explicitly
         ClientOptions.AllowAutoRedirect = false;
     }
 
@@ -48,27 +46,29 @@ public class HttpTestFixture : WebApplicationFactory<Program>, ITestOutputHelper
 
         // Set-up Serilog to use XUnit TestOutputHelper. Not injecting this instance because Log.Logger is a bootstrap logger and will be
         // overwritten during start-up
-        InjectableTestOutputSink injectableTestOutputSink = new(outputTemplate: SerilogTemplates.IncludesProperties);
-        injectableTestOutputSink.Inject(OutputHelperSet);
+        // TODO InjectableTestOutputSink injectableTestOutputSink = new(outputTemplate: SerilogTemplates.IncludesProperties);
+        // TODO injectableTestOutputSink.Inject(OutputHelperSet);
         Log.Logger = new LoggerConfiguration()
                 .MinimumLevel.Override("Microsoft", LogEventLevel.Information)
                 .Enrich.FromLogContext()
                 .Enrich.WithProperty(SerilogProperties.EnvironmentName, TestEnvironmentName)
                 .Enrich.WithMachineName()
                 .Enrich.WithProcessId()
-                .WriteTo.InjectableTestOutput(injectableTestOutputSink)
+                // TODO .WriteTo.InjectableTestOutput(injectableTestOutputSink)
                 .CreateBootstrapLogger();
 
         // Add mock/test services to the builder here
         _ = builder.ConfigureServices((webHostBuilderContext, services) =>
         {
             // Registering the Serilog sink for XUnit in services to that the Serilog configuration in Program picks it up automagically
+            /* TODO
             _ = services.AddSingleton<ILogEventSink, InjectableTestOutputSink>(sp =>
             {
                 InjectableTestOutputSink injectableTestOutputSinkInClosure = new(outputTemplate: SerilogTemplates.IncludesProperties);
                 injectableTestOutputSinkInClosure.Inject(OutputHelperSet);
                 return injectableTestOutputSinkInClosure;
             });
+            */
         });
     }
 
