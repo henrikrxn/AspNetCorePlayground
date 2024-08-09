@@ -5,9 +5,12 @@
     <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.10.0" />
     <PackageVersion Include="FluentAssertions" Version="6.12.0" />
     <PackageVersion Include="NSubstitute" Version="5.1.0" />
-    <PackageVersion Include="xunit" Version="2.9.0" />
-    <PackageVersion Include="xunit.analyzers" Version="1.15.0" />
-    <GlobalPackageReference Include="xunit.runner.visualstudio" Version="2.8.2" />
+    <PackageVersion Include="xunit.v3" Version="0.2.0-pre.69" />
+    <PackageVersion Include="xunit.analyzers" Version="1.16.0-pre.22">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageVersion>
+    <GlobalPackageReference Include="xunit.runner.visualstudio" Version="3.0.0-pre.24" />
     <GlobalPackageReference Include="coverlet.collector" Version="6.0.2" />
   </ItemGroup>
 </Project>
