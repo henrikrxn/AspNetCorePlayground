@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Net;
 using AspNetCorePlayground;
 using AspNetCorePlayground.Plumbing;
 using Microsoft.AspNetCore.HttpLogging;
@@ -128,6 +129,13 @@ try
         })
         .WithName("GetWeatherForecast")
         .WithOpenApi();
+
+    _ = app.MapGet("/throws", () =>
+    {
+        throw new WebException("My exception");
+    });
+
+    _ = app.MapGet("/internalServerError", () => TypedResults.InternalServerError("Something went wrong!"));
 
     Log.Information("Starting application");
 
