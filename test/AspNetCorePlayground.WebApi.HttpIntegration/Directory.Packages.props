@@ -3,7 +3,7 @@
   <Import Project="$([MSBuild]::GetPathOfFileAbove('Directory.Packages.props', '$(MSBuildThisFileDirectory)../'))" />
   <ItemGroup>
     <PackageVersion Include="MartinCostello.Logging.XUnit" Version="0.4.0" />
-    <PackageVersion Include="Microsoft.AspNetCore.Mvc.Testing" Version="9.0.0-preview.6.24328.4" />
+    <PackageVersion Include="Microsoft.AspNetCore.Mvc.Testing" Version="9.0.0-preview.7.24406.2" />
     <PackageVersion Include="Serilog.Sinks.XUnit.Injectable" Version="2.1.42" />
     <!-- Transitive dependencies with CVEs -->
     <PackageVersion Include="System.Net.Http" Version="4.3.4" />
