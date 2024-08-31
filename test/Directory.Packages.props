@@ -6,7 +6,10 @@
     <PackageVersion Include="FluentAssertions" Version="6.12.0" />
     <PackageVersion Include="NSubstitute" Version="5.1.0" />
     <PackageVersion Include="xunit" Version="2.9.0" />
-    <PackageVersion Include="xunit.analyzers" Version="1.16.0" />
+    <PackageVersion Include="xunit.analyzers" Version="1.16.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageVersion>
     <GlobalPackageReference Include="xunit.runner.visualstudio" Version="3.0.0-pre.30" />
     <GlobalPackageReference Include="coverlet.collector" Version="6.0.2" />
   </ItemGroup>
