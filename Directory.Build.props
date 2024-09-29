@@ -8,8 +8,10 @@
     <Deterministic>true</Deterministic>
   </PropertyGroup>
 
-  <!-- Warnings as errors -->
+  <!-- Enable code analysis + Warnings as errors -->
   <PropertyGroup>
+    <WarningLevel>9999</WarningLevel> <!-- All warnings -->
+    <AnalysisLevel>latest-all</AnalysisLevel>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
 
