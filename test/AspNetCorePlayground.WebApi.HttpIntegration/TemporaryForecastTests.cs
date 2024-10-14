@@ -2,7 +2,7 @@ using Xunit.Abstractions;
 
 namespace ResumeService.Test.WebApi.HttpIntegration;
 
-[Collection(ResumeAppCollection.Name)]
+[Collection(ResumeAppCollectionFixture.Name)]
 public class ApiTests
 {
     public ApiTests(HttpTestFixture fixture, ITestOutputHelper outputHelper)
@@ -35,5 +35,7 @@ public class ApiTests
     }
 
     // Duplicating instead of referencing the one in the ResumeService in order to test the "contract" not the existing implementation
+#pragma warning disable CA1812
     internal sealed record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary);
+#pragma warning restore CA1812
 }
