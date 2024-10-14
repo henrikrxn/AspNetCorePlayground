@@ -5,8 +5,11 @@
   <PropertyGroup>
     <IsPackable>false</IsPackable>
     <IsTestProject>true</IsTestProject>
-    <!-- Ignoring CA2007 "Consider adding .ConfigureAwait(false)" as no test projects are libraries -->
-    <NoWarn>$(NoWarn);CA2007</NoWarn>
+    <!-- Ignoring
+         * CA2007 "Consider adding .ConfigureAwait(false)" as no test projects are libraries
+         * CA1717  "Remove the underscores from member name..." I want to use _ in my test method names
+    -->
+    <NoWarn>$(NoWarn);CA1707;CA2007</NoWarn>
   </PropertyGroup>
 
 </Project>

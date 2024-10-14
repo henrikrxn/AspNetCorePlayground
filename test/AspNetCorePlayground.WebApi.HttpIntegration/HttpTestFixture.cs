@@ -37,6 +37,8 @@ public class HttpTestFixture : WebApplicationFactory<Program>, ITestOutputHelper
 
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
+        ArgumentNullException.ThrowIfNull(builder);
+
         // This is executed before any code in the application code, e.g. Program
         // But that seems wrong to me shouldn't this be AFTER the configuration code in Program,
         // but before the application is built in Program ?

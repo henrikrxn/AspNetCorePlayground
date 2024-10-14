@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using System.Net;
+using System.Security.Cryptography;
 using AspNetCorePlayground;
 using AspNetCorePlayground.Plumbing;
 using Microsoft.AspNetCore.HttpLogging;
@@ -73,7 +74,7 @@ try
             // https://nuget.org/packages/serilog.sinks.async
             // as console historically has been known to slow things down a lot
 
-            // Console is terribly ineffective, so limiting to the really bad stuff
+            // Console is terribly ineffective, so limiting to the really terrible stuff
             _ = configuration.WriteTo.Console(outputTemplate: SerilogTemplates.IncludesProperties, restrictedToMinimumLevel: LogEventLevel.Error);
         }
         else
@@ -121,8 +122,8 @@ try
                     new WeatherForecast
                     (
                         DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-                        Random.Shared.Next(-20, 55),
-                        summaries[Random.Shared.Next(summaries.Length)]
+                        RandomNumberGenerator.GetInt32(-20, 55),
+                        summaries[RandomNumberGenerator.GetInt32(0, summaries.Length)]
                     ))
                 .ToArray();
             return forecast;
@@ -144,7 +145,9 @@ try
     Log.Information("Application stopped normally");
     return ExitCodes.Ok;
 }
+#pragma warning disable CA1031
 catch (Exception ex)
+#pragma warning restore CA1031
 {
     Log.Fatal(ex, "Unhandled problems during application setup and startup");
     return ExitCodes.Error;
