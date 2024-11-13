@@ -4,7 +4,7 @@
   <ItemGroup>
     <PackageVersion Include="MartinCostello.Logging.XUnit" Version="0.4.0" />
     <PackageVersion Include="Microsoft.AspNetCore.Mvc.Testing" Version="9.0.0" />
-    <PackageVersion Include="Serilog.Sinks.XUnit.Injectable" Version="2.1.51" />
+    <PackageVersion Include="Serilog.Sinks.XUnit.Injectable" Version="2.1.54" />
     <!-- Transitive dependencies with CVEs -->
     <PackageVersion Include="System.Net.Http" Version="4.3.4" />
     <PackageVersion Include="System.Text.RegularExpressions" Version="4.3.1" />
