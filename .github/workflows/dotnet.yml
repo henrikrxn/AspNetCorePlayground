@@ -19,8 +19,7 @@ jobs:
     - name: Setup .NET
       uses: actions/setup-dotnet@v4
       with:
-        dotnet-version: 9.0.x
-        dotnet-quality: preview
+        global-json-file: ./global.json
     - name: Display dotnet version
       run: dotnet --version
     - name: Restore dependencies
