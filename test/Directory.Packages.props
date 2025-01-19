@@ -2,15 +2,15 @@
 <Project>
   <Import Project="$([MSBuild]::GetPathOfFileAbove(Directory.Packages.props, $(MSBuildThisFileDirectory)../))" />
   <ItemGroup>
-    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.11.1" />
+    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.12.0" />
     <PackageVersion Include="FluentAssertions" Version="6.12.2" />
     <PackageVersion Include="NSubstitute" Version="5.3.0" />
-    <PackageVersion Include="xunit.v3" Version="0.6.0-pre.7" />
-    <PackageVersion Include="xunit.analyzers" Version="1.17.0">
+    <PackageVersion Include="xunit.v3" Version="1.0.1" />
+    <PackageVersion Include="xunit.analyzers" Version="1.19.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageVersion>
-    <GlobalPackageReference Include="xunit.runner.visualstudio" Version="3.0.0-pre.49" />
+    <GlobalPackageReference Include="xunit.runner.visualstudio" Version="3.0.1" />
     <GlobalPackageReference Include="coverlet.collector" Version="6.0.2" />
   </ItemGroup>
 </Project>
