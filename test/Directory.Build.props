@@ -14,4 +14,9 @@
     <WarningsNotAsErrors>$(WarningsNotAsErrors);CA1707;CA2007</WarningsNotAsErrors>
   </PropertyGroup>
 
+  <PropertyGroup Label="Use Microsoft Testing Platform">
+    <UseMicrosoftTestingPlatformRunner>true</UseMicrosoftTestingPlatformRunner>
+    <TestingPlatformDotnetTestSupport>true</TestingPlatformDotnetTestSupport>
+  </PropertyGroup>
+
 </Project>
