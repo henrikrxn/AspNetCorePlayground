@@ -49,6 +49,13 @@ try
         logging.CombineLogs = true;
     });
 
+    // Has a performance penalty so could consider only activating in development
+    builder.Host.UseDefaultServiceProvider((_, options) =>
+    {
+        options.ValidateScopes = true;
+        options.ValidateOnBuild = true;
+    });
+
     // Serilog internal debug logging
     if (builder.Environment.IsDevelopment())
     {
