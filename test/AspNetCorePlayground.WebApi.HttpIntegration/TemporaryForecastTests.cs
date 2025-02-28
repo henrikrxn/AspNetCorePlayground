@@ -33,8 +33,8 @@ public sealed class ApiTests : IDisposable
         WeatherForecast[]? forecasts = await client.GetFromJsonAsync<WeatherForecast[]>("/weatherforecast", TestContext.Current.CancellationToken);
 
         // Assert
-        _ = forecasts.Should().NotBeNull();
-        _ = forecasts.Should().HaveCount(5);
+        _ = forecasts.ShouldNotBeNull();
+        forecasts.Length.ShouldBe(5);
     }
 
     // Duplicating instead of referencing the one in the ResumeService in order to test the "contract" not the existing implementation
