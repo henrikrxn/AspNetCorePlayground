@@ -1,0 +1,8 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/AspNetCorePlayground/AspNetCorePlayground.csproj" />
+  </Folder>
+  <Folder Name="/test/">
+    <Project Path="test/AspNetCorePlayground.WebApi.HttpIntegration/AspNetCorePlayground.WebApi.HttpIntegration.csproj" />
+  </Folder>
+</Solution>
