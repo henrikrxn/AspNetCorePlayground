@@ -19,4 +19,9 @@
     <TestingPlatformDotnetTestSupport>true</TestingPlatformDotnetTestSupport>
   </PropertyGroup>
 
+  <PropertyGroup Label="Use Microsoft Code coverage">
+    <!-- When no C++ code then it is recommended to disable these two, see -->
+    <EnableStaticNativeInstrumentation>False</EnableStaticNativeInstrumentation>
+    <EnableDynamicNativeInstrumentation>False</EnableDynamicNativeInstrumentation>
+  </PropertyGroup>
 </Project>
