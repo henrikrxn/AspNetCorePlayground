@@ -1,0 +1,7 @@
+# Allow _ in method names for test cases
+[*.cs]
+dotnet_diagnostic.CA1707.severity = none
+
+# Tests are neveer libraries, so no .ConfigureAwait(false) stuff
+[*.cs]
+dotnet_diagnostic.CA2007.severity = none
