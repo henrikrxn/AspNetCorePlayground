@@ -31,12 +31,12 @@ public class HttpTestFixture : WebApplicationFactory<Program>
         ClientOptions.AllowAutoRedirect = false;
     }
 
+    // ConfigureWebHost is executed before any code in the application code, e.g. Program
+    // The builder.ConfigureXYZ methods, e.g. ConfigureAppConfiguration, are executed AFTER the same methods in Program,
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
         ArgumentNullException.ThrowIfNull(builder);
 
-        // ConfigureWebHost is executed before any code in the application code, e.g. Program
-        // The builder.ConfigureXYZ methods, e.g. ConfigureAppConfiguration, are executed AFTER the same methods in Program,
         OutputHelperSet.WriteLine($"Test code: {nameof(ConfigureWebHost)}");
 
         _ = builder.UseEnvironment(TestEnvironmentName);
@@ -57,11 +57,8 @@ public class HttpTestFixture : WebApplicationFactory<Program>
         builder.ConfigureAppConfiguration(configurationBuilder =>
         {
             IList<KeyValuePair<string, string?>> inMemoryCorsValues =
-            [
-                KeyValuePair.Create<string, string?>(Program.CorsAllowedOriginsConfigurationPath, CorsAllowedOriginsForTests)
-            ];
-            configurationBuilder
-                .AddInMemoryCollection(inMemoryCorsValues);
+                [ KeyValuePair.Create<string, string?>(Program.CorsAllowedOriginsConfigurationPath, CorsAllowedOriginsForTests) ];
+            configurationBuilder.AddInMemoryCollection(inMemoryCorsValues);
         });
 
         // Add mock/test services to the builder here
