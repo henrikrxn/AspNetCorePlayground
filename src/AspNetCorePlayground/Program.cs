@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
 using System.Net;
 using System.Security.Cryptography;
@@ -32,6 +33,13 @@ try
 
     Log.Information("Environment: {Environment}", builder.Environment.EnvironmentName);
 
+    // Has a performance penalty so could consider only activating in development
+    builder.Host.UseDefaultServiceProvider((_, options) =>
+    {
+        options.ValidateScopes = true;
+        options.ValidateOnBuild = true;
+    });
+
     if (builder.Environment.IsDevelopment())
     {
         _ = builder.Configuration.AddUserSecrets(typeof(AspNetCorePlayground.Program).Assembly, optional: true, reloadOnChange: true);
@@ -47,13 +55,6 @@ try
     {
         logging.LoggingFields = HttpLoggingFields.All;
         logging.CombineLogs = true;
-    });
-
-    // Has a performance penalty so could consider only activating in development
-    builder.Host.UseDefaultServiceProvider((_, options) =>
-    {
-        options.ValidateScopes = true;
-        options.ValidateOnBuild = true;
     });
 
     // Serilog internal debug logging
@@ -77,7 +78,7 @@ try
         if (context.HostingEnvironment.IsProduction())
         {
             Log.Information("Setting up Serilog for production");
-            // If console is deemed in Azure environments there it is probably a good idea to add
+            // If console is used in Azure environments there it is probably a good idea to add
             // https://nuget.org/packages/serilog.sinks.async
             // as console historically has been known to slow things down a lot
 
@@ -91,6 +92,11 @@ try
             _ = configuration.WriteTo.Console(outputTemplate: SerilogTemplates.IncludesProperties);
         }
     }, writeToProviders: !builder.Environment.IsEnvironment(MyAdditionalEnvironments.HttpIntegrationTest));
+
+    // TODO Look into CORS set-up for Minimal API
+    _ = builder.Services.AddCors();
+
+    // If I ever want to use "services.AddResponseCaching();" it has to be after CORS
 
     // Add services to the container.
     // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -116,13 +122,61 @@ try
         });
     }
 
-    _ = app.UseHttpsRedirection();
-
     // The normal Microsoft request logging
     _ = app.UseHttpLogging();
 
-    string[] summaries = [ "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching" ];
+    _ = app.UseHttpsRedirection();
 
+    // Before or after CORS ? : app.UseStaticFiles();
+
+    // This must be before CORS : app.UseRouting();
+
+    // TODO Look into CORS set-up for Minimal API
+    app.UseCors(corsPolicyBuilder =>
+    {
+
+        // TODO Can this be moved back up in 'ConfigureServices' after .NET 6 wih the new cool way of having "things" ready earlier ?
+        corsPolicyBuilder
+            .AllowAnyHeader()
+            .AllowAnyMethod(); // TODO look into narrowing this
+
+        var allowedOriginsConfigSection =
+            builder.Configuration.GetSection(AspNetCorePlayground.Program.CorsAllowedOriginsConfigurationPath); // TODO Separate options object
+        var semicolonSeparatedOrigins = allowedOriginsConfigSection.Get<string>() ??
+                                        throw new ValidationException($"Configuration path '{AspNetCorePlayground.Program.CorsAllowedOriginsConfigurationPath}' must contain at least one CORS allowed origin");
+        var allowedOrigins =
+            semicolonSeparatedOrigins.Split(';', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+
+        // TODO Move all this to a separate configuration object
+        if (allowedOrigins.Length > 0)
+        {
+            if (allowedOrigins.Any(origin => "*".Equals(origin)))
+            {
+                corsPolicyBuilder.AllowAnyOrigin();
+            }
+            else
+            {
+                foreach (var origin in allowedOrigins)
+                {
+                    if (!Uri.TryCreate(origin, UriKind.Absolute, out _))
+                    {
+                        throw new ValidationException(
+                            $"Origin '{origin}' in configuration path '{AspNetCorePlayground.Program.CorsAllowedOriginsConfigurationPath}' cannot be parsed as an Uri");
+                    }
+                }
+
+                corsPolicyBuilder.WithOrigins(allowedOrigins);
+            }
+        }
+        else
+        {
+            throw new ValidationException($"Configuration path '{AspNetCorePlayground.Program.CorsAllowedOriginsConfigurationPath}' must contain at least one CORS allowed origin");
+        }
+    });
+
+    // This must be after CORS : app.UseAuthorization();
+
+    string[] summaries = [ "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching" ];
     _ = app.MapGet("/weatherforecast", () =>
         {
             WeatherForecast[] forecast = Enumerable.Range(1, 5).Select(index =>
@@ -173,5 +227,14 @@ namespace AspNetCorePlayground
     }
 
 // Expose the Program class so that WebApplicationFactory<T> can access it
-    public partial class Program { }
+// TODO Remove once .NET 10 becomes RTM
+#pragma warning disable CA1052
+#pragma warning disable CA1515
+    public partial class Program
+#pragma warning restore CA1515
+#pragma warning restore CA1052
+    {
+        // TODO Move this to separate config class
+        public const string CorsAllowedOriginsConfigurationPath = "Cors:AllowedOrigins";
+    }
 }

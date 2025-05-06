@@ -1,12 +1,12 @@
-using AspNetCorePlayground;
 using AspNetCorePlayground.Plumbing;
 using Microsoft.AspNetCore.TestHost;
+using Microsoft.Extensions.Configuration;
 using Serilog;
 using Serilog.Events;
 // TODO using Serilog.Sinks.XUnit.Injectable;
 // TODO using Serilog.Sinks.XUnit.Injectable.Extensions;
 
-namespace ResumeService.Test.WebApi.HttpIntegration;
+namespace AspNetCorePlayground.WebApi.HttpIntegration;
 
 // TODO Cleanup debug messages in class as it will be noise later
 
@@ -14,10 +14,8 @@ public class HttpTestFixture : WebApplicationFactory<Program>
 {
     public ITestOutputHelper? OutputHelper { get; set; }
 
-#pragma warning disable IDE1006 // Naming Styles
-    // ReSharper disable once InconsistentNaming
-    private static readonly string TestEnvironmentName = MyAdditionalEnvironments.HttpIntegrationTest;
-#pragma warning restore IDE1006 // Naming Styles
+    protected static readonly string TestEnvironmentName = MyAdditionalEnvironments.HttpIntegrationTest;
+    public const string CorsAllowedOriginsForTests = "https://a.b.c;https://d.e.f;https://localhost:3000";
 
     private ITestOutputHelper OutputHelperSet => OutputHelper ?? throw new NullValueMissingInitializeException(nameof(OutputHelper));
 
@@ -29,7 +27,7 @@ public class HttpTestFixture : WebApplicationFactory<Program>
     {
         // Use HTTPS by default
         ClientOptions.BaseAddress = new Uri("https://localhost");
-        // Do not follow redirects so that redirects can tested explicitly
+        // Do not follow redirects so that redirects can be tested explicitly
         ClientOptions.AllowAutoRedirect = false;
     }
 
@@ -37,9 +35,8 @@ public class HttpTestFixture : WebApplicationFactory<Program>
     {
         ArgumentNullException.ThrowIfNull(builder);
 
-        // This is executed before any code in the application code, e.g. Program
-        // But that seems wrong to me shouldn't this be AFTER the configuration code in Program,
-        // but before the application is built in Program ?
+        // ConfigureWebHost is executed before any code in the application code, e.g. Program
+        // The builder.ConfigureXYZ methods, e.g. ConfigureAppConfiguration, are executed AFTER the same methods in Program,
         OutputHelperSet.WriteLine($"Test code: {nameof(ConfigureWebHost)}");
 
         _ = builder.UseEnvironment(TestEnvironmentName);
@@ -56,6 +53,16 @@ public class HttpTestFixture : WebApplicationFactory<Program>
                 .Enrich.WithProcessId()
                 // TODO .WriteTo.InjectableTestOutput(injectableTestOutputSink)
                 .CreateBootstrapLogger();
+
+        builder.ConfigureAppConfiguration(configurationBuilder =>
+        {
+            IList<KeyValuePair<string, string?>> inMemoryCorsValues =
+            [
+                KeyValuePair.Create<string, string?>(Program.CorsAllowedOriginsConfigurationPath, CorsAllowedOriginsForTests)
+            ];
+            configurationBuilder
+                .AddInMemoryCollection(inMemoryCorsValues);
+        });
 
         // Add mock/test services to the builder here
         _ = builder.ConfigureServices((webHostBuilderContext, services) =>
