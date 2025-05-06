@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <RootNamespace>ResumeService.Test.WebApi.HttpIntegration</RootNamespace>
+    <RootNamespace>AspNetCorePlayground.WebApi.HttpIntegration</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>

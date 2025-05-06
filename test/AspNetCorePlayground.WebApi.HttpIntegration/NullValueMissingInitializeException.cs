@@ -1,6 +1,6 @@
-﻿namespace ResumeService.Test.WebApi.HttpIntegration;
+﻿namespace AspNetCorePlayground.WebApi.HttpIntegration;
 
-public class NullValueMissingInitializeException : Exception
+internal sealed class NullValueMissingInitializeException : Exception
 {
     public NullValueMissingInitializeException() { }
     public NullValueMissingInitializeException(string message) : base(message) { }

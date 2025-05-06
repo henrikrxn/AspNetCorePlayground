@@ -1,4 +1,4 @@
- namespace ResumeService.Test.WebApi.HttpIntegration;
+namespace AspNetCorePlayground.WebApi.HttpIntegration;
 
 [Collection(ResumeAppCollectionFixture.Name)]
 public sealed class ApiTests : IDisposable
