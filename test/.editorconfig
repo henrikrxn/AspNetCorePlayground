@@ -5,6 +5,3 @@ dotnet_diagnostic.CA1707.severity = none
 
 # Tests are never libraries, so no .ConfigureAwait(false) stuff
 dotnet_diagnostic.CA2007.severity = none
-
-# Clashes big time with XUnit requirements for "things"  being public, e.g. test classes and fixtures, so disabling
-dotnet_diagnostic.CA1515.severity = none
