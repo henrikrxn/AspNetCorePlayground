@@ -19,6 +19,7 @@ public sealed class CorsTests
     public async Task WhenOptionsRequestOriginIsAllowedOrigin_TheOptionsReplyContainsSentOriginInAccessControlAllowOrigin()
     {
         HttpClient client = Fixture.CreateClient();
+        // The tests simulate a preflight request because it is the browser that determines the need for a preflight request
         using HttpRequestMessage request = CreatePreflightRequestWithRequiredCorsHeaders();
 
         // Act
