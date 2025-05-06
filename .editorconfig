@@ -160,6 +160,10 @@ dotnet_diagnostic.CA1512.severity = warning
 # CA1513: Use ObjectDisposedException throw helper
 dotnet_diagnostic.CA1513.severity = warning
 
+# Triggered even if things are used outside of project and most importantly clashes big time
+# with XUnit requirements for "things" being public, e.g. test classes and fixtures, so disabling
+dotnet_diagnostic.CA1515.severity = none
+
 # CA1725: Parameter names should match base declaration
 dotnet_diagnostic.CA1725.severity = suggestion
 
