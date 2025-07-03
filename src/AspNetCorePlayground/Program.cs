@@ -4,7 +4,9 @@ using System.Net;
 using System.Security.Cryptography;
 using AspNetCorePlayground;
 using AspNetCorePlayground.Plumbing;
+using AspNetCorePlayground.Plumbing.Configuration;
 using Microsoft.AspNetCore.HttpLogging;
+using Microsoft.Extensions.Options;
 using Serilog;
 using Serilog.Events;
 
@@ -32,6 +34,10 @@ try
     WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
     Log.Information("Environment: {Environment}", builder.Environment.EnvironmentName);
+
+    builder.Services.AddOptionsWithValidateOnStart<DictionaryConfiguration>()
+        .Bind(builder.Configuration.GetSection(DictionaryConfiguration.SectionName))
+        .ValidateDataAnnotations();
 
     // Has a performance penalty so could consider only activating in development
     builder.Host.UseDefaultServiceProvider((_, options) =>
@@ -134,7 +140,6 @@ try
     // TODO Look into CORS set-up for Minimal API
     app.UseCors(corsPolicyBuilder =>
     {
-
         // TODO Can this be moved back up in 'ConfigureServices' after .NET 6 wih the new cool way of having "things" ready earlier ?
         corsPolicyBuilder
             .AllowAnyHeader()
@@ -198,6 +203,13 @@ try
     });
 
     _ = app.MapGet("/internalServerError", () => TypedResults.InternalServerError("Something went wrong!"));
+
+    _ = app.MapGet("/config/dictionary", (IOptions<DictionaryConfiguration> dictionaryOptions) =>
+    {
+        DictionaryConfiguration dictionary = dictionaryOptions.Value;
+
+        return dictionary.Items is { Count: > 0 } ? Results.Ok(dictionary.Items) : Results.NotFound("Configuration items not found.");
+    });
 
     Log.Information("Starting application");
 
