@@ -3,6 +3,6 @@
   <Import Project="$([MSBuild]::GetPathOfFileAbove('Directory.Packages.props', '$(MSBuildThisFileDirectory)../'))" />
   <ItemGroup>
     <PackageVersion Include="Microsoft.AspNetCore.OpenApi" Version="9.0.8" />
-    <PackageVersion Include="Swashbuckle.AspNetCore.SwaggerUi" Version="8.1.1" />
+    <PackageVersion Include="Swashbuckle.AspNetCore.SwaggerUi" Version="9.0.3" />
   </ItemGroup>
 </Project>
