@@ -146,9 +146,9 @@ try
             .AllowAnyMethod(); // TODO look into narrowing this
 
         var allowedOriginsConfigSection =
-            builder.Configuration.GetSection(AspNetCorePlayground.Program.CorsAllowedOriginsConfigurationPath); // TODO Separate options object
+            builder.Configuration.GetSection(ConfigurationPaths.CorsAllowedOrigins);
         var semicolonSeparatedOrigins = allowedOriginsConfigSection.Get<string>() ??
-                                        throw new ValidationException($"Configuration path '{AspNetCorePlayground.Program.CorsAllowedOriginsConfigurationPath}' must contain at least one CORS allowed origin");
+                                        throw new ValidationException($"Configuration path '{ConfigurationPaths.CorsAllowedOrigins}' must contain at least one CORS allowed origin");
         var allowedOrigins =
             semicolonSeparatedOrigins.Split(';', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
 
@@ -166,7 +166,7 @@ try
                     if (!Uri.TryCreate(origin, UriKind.Absolute, out _))
                     {
                         throw new ValidationException(
-                            $"Origin '{origin}' in configuration path '{AspNetCorePlayground.Program.CorsAllowedOriginsConfigurationPath}' cannot be parsed as an Uri");
+                            $"Origin '{origin}' in configuration path '{ConfigurationPaths.CorsAllowedOrigins}' cannot be parsed as an Uri");
                     }
                 }
 
@@ -175,7 +175,7 @@ try
         }
         else
         {
-            throw new ValidationException($"Configuration path '{AspNetCorePlayground.Program.CorsAllowedOriginsConfigurationPath}' must contain at least one CORS allowed origin");
+            throw new ValidationException($"Configuration path '{ConfigurationPaths.CorsAllowedOrigins}' must contain at least one CORS allowed origin");
         }
     });
 
@@ -247,6 +247,6 @@ namespace AspNetCorePlayground
 #pragma warning restore CA1052
     {
         // TODO Move this to separate config class
-        public const string CorsAllowedOriginsConfigurationPath = "Cors:AllowedOrigins";
+
     }
 }
