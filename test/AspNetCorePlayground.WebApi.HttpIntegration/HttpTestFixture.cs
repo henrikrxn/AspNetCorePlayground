@@ -1,4 +1,5 @@
 using AspNetCorePlayground.Plumbing;
+using AspNetCorePlayground.Plumbing.Configuration;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
 using Serilog;
@@ -58,7 +59,7 @@ public class HttpTestFixture : WebApplicationFactory<Program>
         {
             IList<KeyValuePair<string, string?>> inMemoryCorsValues =
             [
-                KeyValuePair.Create<string, string?>(Program.CorsAllowedOriginsConfigurationPath, CorsAllowedOriginsForTests)
+                KeyValuePair.Create<string, string?>(ConfigurationPaths.CorsAllowedOrigins, CorsAllowedOriginsForTests)
             ];
             configurationBuilder
                 .AddInMemoryCollection(inMemoryCorsValues);
