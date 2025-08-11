@@ -56,16 +56,6 @@ public sealed class CorsTests
         optionsRequest.Headers.Add(HeaderNames.AccessControlRequestMethod, requestMethod);
         var originUri = new Uri(origin);
 
-        // TODO This seems like it can be removed? Why the distinction with default port ?
-        if (originUri.IsDefaultPort)
-        {
-            optionsRequest.Headers.Referrer = new Uri($"{origin}/");
-        }
-        else
-        {
-            optionsRequest.Headers.Referrer = new Uri($"{origin}/");
-        }
-
         return optionsRequest;
     }
 }

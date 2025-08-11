@@ -239,14 +239,12 @@ namespace AspNetCorePlayground
     }
 
 // Expose the Program class so that WebApplicationFactory<T> can access it
-// TODO Remove once .NET 10 becomes RTM
+// TODO Remove pragmas once .NET 10 becomes RTM
 #pragma warning disable CA1052
 #pragma warning disable CA1515
     public partial class Program
 #pragma warning restore CA1515
 #pragma warning restore CA1052
     {
-        // TODO Move this to separate config class
-
     }
 }
