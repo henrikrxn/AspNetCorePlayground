@@ -3,24 +3,14 @@ using Microsoft.Net.Http.Headers;
 namespace AspNetCorePlayground.WebApi.HttpIntegration;
 
 [Collection(ResumeAppCollectionFixture.Name)]
-public sealed class CorsTests : IDisposable
+public sealed class CorsTests
 {
-    public CorsTests(HttpTestFixture fixture, ITestOutputHelper outputHelper)
+    public CorsTests(HttpTestFixture fixture)
     {
         Fixture = fixture;
-
-        // Route output from the fixture's logs to xunit's output
-        OutputHelper = outputHelper;
-        Fixture.SetOutputHelper(OutputHelper);
     }
 
     private HttpTestFixture Fixture { get; }
-
-    private ITestOutputHelper OutputHelper { get; }
-    public void Dispose()
-    {
-        Fixture.OutputHelper = null;
-    }
 
     [Fact]
     public async Task WhenOptionsRequestOriginIsAllowedOrigin_TheOptionsReplyContainsSentOriginInAccessControlAllowOrigin()

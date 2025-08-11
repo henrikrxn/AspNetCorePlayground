@@ -1,5 +1,8 @@
 
 [*.cs]
+# Globalization not relevant for tests at the moment
+dotnet_diagnostic.CA1303.severity = none
+
 # Allow _ in method names for test cases
 dotnet_diagnostic.CA1707.severity = none
 

@@ -20,9 +20,6 @@
     <PackageReference Include="xunit.analyzers" />
     <PackageReference Include="Microsoft.CodeCoverage" />
     <PackageReference Include="Microsoft.Testing.Extensions.CodeCoverage" />
-    <!-- TODO
-    <PackageReference Include="Serilog.Sinks.XUnit.Injectable" />
-    -->
   </ItemGroup>
 
   <ItemGroup>
