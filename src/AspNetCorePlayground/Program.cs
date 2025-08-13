@@ -6,9 +6,11 @@ using AspNetCorePlayground;
 using AspNetCorePlayground.Plumbing;
 using AspNetCorePlayground.Plumbing.Configuration;
 using Microsoft.AspNetCore.HttpLogging;
+using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using Serilog;
 using Serilog.Events;
+using ILogger = Microsoft.Extensions.Logging.ILogger;
 
 // This enables ASP.NET Core HTTP integration tests to setup Serilog so that tests gets logging
 if (Log.Logger == Serilog.Core.Logger.None)
@@ -27,27 +29,34 @@ else
     Log.Information("Logger already set-up. Skipping Bootstrap logger");
 }
 
+WebApplicationBuilder? builder = null;
+
 try
 {
     Log.Information("Creating WebApplication builder");
 
-    WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
+    builder = WebApplication.CreateBuilder(args);
 
-    Log.Information("Environment: {Environment}", builder.Environment.EnvironmentName);
+    Log.Information("Environment: {environmentName}", builder.Environment.EnvironmentName);
 
-    builder.Services.AddOptionsWithValidateOnStart<DictionaryConfiguration>()
+    _ = builder.Services.AddOptionsWithValidateOnStart<DictionaryConfiguration>()
         .Bind(builder.Configuration.GetSection(DictionaryConfiguration.SectionName))
         .ValidateDataAnnotations();
 
-    // Has a performance penalty so could consider only activating in development
-    builder.Host.UseDefaultServiceProvider((_, options) =>
-    {
-        options.ValidateScopes = true;
-        options.ValidateOnBuild = true;
-    });
-
     if (builder.Environment.IsDevelopment())
     {
+        // Serilog internal debug logging
+        Log.Information("Setting up Serilog debug logging for development");
+        Serilog.Debugging.SelfLog.Enable(msg => Debug.WriteLine(msg));
+        Serilog.Debugging.SelfLog.Enable(Console.Error);
+
+        // Has a performance penalty so  only activating in development
+        _ = builder.Host.UseDefaultServiceProvider((_, options) =>
+        {
+            options.ValidateScopes = true;
+            options.ValidateOnBuild = true;
+        });
+
         _ = builder.Configuration.AddUserSecrets(typeof(AspNetCorePlayground.Program).Assembly, optional: true, reloadOnChange: true);
     }
 
@@ -63,25 +72,17 @@ try
         logging.CombineLogs = true;
     });
 
-    // Serilog internal debug logging
-    if (builder.Environment.IsDevelopment())
+    _ = builder.Host.UseSerilog((hostBuilderContext, serviceProvider, seriLogloggerConfiguration) =>
     {
-        Log.Information("Setting up Serilog debug logging for development");
-        Serilog.Debugging.SelfLog.Enable(msg => Debug.WriteLine(msg));
-        Serilog.Debugging.SelfLog.Enable(Console.Error);
-    }
-
-    _ = builder.Host.UseSerilog((context, services, configuration) =>
-    {
-        _ = configuration
-            .ReadFrom.Configuration(context.Configuration)
-            .ReadFrom.Services(services)
-            .Enrich.WithProperty(SerilogProperties.EnvironmentName, context.HostingEnvironment.EnvironmentName)
+        _ = seriLogloggerConfiguration
+            .ReadFrom.Configuration(hostBuilderContext.Configuration)
+            .ReadFrom.Services(serviceProvider)
+            .Enrich.WithProperty(SerilogProperties.EnvironmentName, hostBuilderContext.HostingEnvironment.EnvironmentName)
             .Enrich.WithMachineName()
             .Enrich.WithProcessId()
             .Enrich.FromLogContext();
 
-        if (context.HostingEnvironment.IsProduction())
+        if (hostBuilderContext.HostingEnvironment.IsProduction())
         {
             Log.Information("Setting up Serilog for production");
             // If console is used in Azure environments there it is probably a good idea to add
@@ -89,13 +90,15 @@ try
             // as console historically has been known to slow things down a lot
 
             // Console is terribly ineffective, so limiting to the really terrible stuff
-            _ = configuration.WriteTo.Console(outputTemplate: SerilogTemplates.IncludesProperties, restrictedToMinimumLevel: LogEventLevel.Error);
+            _ = seriLogloggerConfiguration.WriteTo.Console(outputTemplate: SerilogTemplates.IncludesProperties,
+                restrictedToMinimumLevel: LogEventLevel.Error);
         }
         else
         {
-            Log.Information("Setting up Serilog for Environment: '{Environment}'", context.HostingEnvironment.EnvironmentName);
+            Log.Information("Setting up Serilog for Environment: '{environmentName}'",
+                hostBuilderContext.HostingEnvironment.EnvironmentName);
 
-            _ = configuration.WriteTo.Console(outputTemplate: SerilogTemplates.IncludesProperties);
+            _ = seriLogloggerConfiguration.WriteTo.Console(outputTemplate: SerilogTemplates.IncludesProperties);
         }
     }, writeToProviders: !builder.Environment.IsEnvironment(MyAdditionalEnvironments.HttpIntegrationTest));
 
@@ -110,19 +113,34 @@ try
     _ = builder.Services.AddOpenApi();
 
     Log.Information("Building application");
+}
+#pragma warning disable CA1031
+catch (Exception ex)
+#pragma warning restore CA1031
+{
+    Log.Fatal(ex, "Unhandled problems during application setup and startup");
+    Log.Information("Flushing and closing Serilog");
+    Log.CloseAndFlush();
+
+    return ExitCodes.Error;
+}
+
+ILogger loggerAfterBuild = NullLogger.Instance;
+
+try {
 
     using WebApplication app = builder.Build();
 
-    Log.Information("Environment: {Environment}", builder.Environment.EnvironmentName);
+    loggerAfterBuild = app.Logger;
+    loggerAfterBuild.UsingEnvironment(builder.Environment.EnvironmentName);
+    loggerAfterBuild.AddingMiddleware();
 
-    Log.Information("Adding middleware");
-
-    app.MapOpenApi();
+    _ = app.MapOpenApi();
 
     // Configure the HTTP request pipeline.
     if (app.Environment.IsDevelopment())
     {
-        app.UseSwaggerUI(options =>
+        _ = app.UseSwaggerUI(options =>
         {
             options.SwaggerEndpoint("/openapi/v1.json", "v1");
         });
@@ -181,9 +199,14 @@ try
 
     // This must be after CORS : app.UseAuthorization();
 
-    string[] summaries = [ "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching" ];
-    _ = app.MapGet("/weatherforecast", () =>
+    //
+    // Endpoints
+    //
+    _ = app.MapGet("/weatherforecast", static (ILogger<Program> logger) =>
         {
+            logger.GeneratingWeatherForecast();
+
+            string[] summaries = [ "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching" ];
             WeatherForecast[] forecast = Enumerable.Range(1, 5).Select(index =>
                     new WeatherForecast
                     (
@@ -197,37 +220,49 @@ try
         .WithName("GetWeatherForecast")
         .WithOpenApi();
 
-    _ = app.MapGet("/throws", () =>
+    _ = app.MapGet("/throws", static (ILogger<Program> logger) =>
     {
+        logger.AboutToThrowException();
+
         throw new WebException("My exception");
     });
 
-    _ = app.MapGet("/internalServerError", () => TypedResults.InternalServerError("Something went wrong!"));
-
-    _ = app.MapGet("/config/dictionary", (IOptions<DictionaryConfiguration> dictionaryOptions) =>
+    _ = app.MapGet("/internalServerError", static (ILogger<Program> logger) =>
     {
+        logger.InternalServerError();
+
+        return TypedResults.InternalServerError("Something went wrong!");
+    });
+
+    _ = app.MapGet("/config/dictionary", (ILogger<Program> logger, IOptions<DictionaryConfiguration> dictionaryOptions) =>
+    {
+        logger.GettingConfiguration();
+
         DictionaryConfiguration dictionary = dictionaryOptions.Value;
 
         return dictionary.Items is { Count: > 0 } ? Results.Ok(dictionary.Items) : Results.NotFound("Configuration items not found.");
     });
 
-    Log.Information("Starting application");
+    loggerAfterBuild.StartingApplication();
 
     app.Run();
 
-    Log.Information("Application stopped normally");
+    loggerAfterBuild.ApplicationStoppedNormally();
+
     return ExitCodes.Ok;
 }
 #pragma warning disable CA1031
 catch (Exception ex)
 #pragma warning restore CA1031
 {
-    Log.Fatal(ex, "Unhandled problems during application setup and startup");
+    loggerAfterBuild.CriticalErrorDuringStartup(ex);
+
     return ExitCodes.Error;
 }
 finally
 {
-    Log.Information("Flushing and closing Serilog");
+    loggerAfterBuild.FlushingAndClosingSerilog();
+
     Log.CloseAndFlush();
 }
 
@@ -246,5 +281,40 @@ namespace AspNetCorePlayground
 #pragma warning restore CA1515
 #pragma warning restore CA1052
     {
+    }
+
+    internal static partial class MyLoggerExtensions
+    {
+        [LoggerMessage(EventId = 1, Level = LogLevel.Information, Message = "Environment: {environmentName}")]
+        public static partial void UsingEnvironment(this ILogger logger, string environmentName);
+
+        [LoggerMessage(EventId = 2, Level = LogLevel.Information, Message = "Adding middleware")]
+        public static partial void AddingMiddleware(this ILogger logger);
+
+        // TODO new EventId
+        [LoggerMessage(EventId = 96, Level = LogLevel.Information, Message = "Starting application")]
+        public static partial void StartingApplication(this ILogger logger);
+
+        [LoggerMessage(EventId = 97, Level = LogLevel.Critical, Message = "Unhandled problems during application setup and startup")]
+        public static partial void CriticalErrorDuringStartup(this ILogger logger, Exception exception);
+
+        [LoggerMessage(EventId = 98,  Level = LogLevel.Information, Message = "Application stopped normally")]
+        public static partial void ApplicationStoppedNormally(this ILogger logger);
+
+        [LoggerMessage(EventId = 99,  Level = LogLevel.Information, Message = "Flushing and closing Serilog")]
+        public static partial void FlushingAndClosingSerilog(this ILogger logger);
+
+        // Logging used in endpoints
+        [LoggerMessage(EventId = 100, Level = LogLevel.Information, Message = "Generating WeatherForecast")]
+        public static partial void GeneratingWeatherForecast(this ILogger logger);
+
+        [LoggerMessage(EventId = 101, Level = LogLevel.Information, Message = "Throwing exception")]
+        public static partial void AboutToThrowException(this ILogger logger);
+
+        [LoggerMessage(EventId = 102, Level = LogLevel.Information, Message = "Internal Server Error")]
+        public static partial void InternalServerError(this ILogger logger);
+
+        [LoggerMessage(EventId = 102, Level = LogLevel.Information, Message = "Getting configuration")]
+        public static partial void GettingConfiguration(this ILogger logger);
     }
 }
