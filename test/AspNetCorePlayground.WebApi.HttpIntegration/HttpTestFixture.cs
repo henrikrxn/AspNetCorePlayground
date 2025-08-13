@@ -1,4 +1,5 @@
 using System.Globalization;
+using System.Runtime.CompilerServices;
 using AspNetCorePlayground.Plumbing;
 using AspNetCorePlayground.Plumbing.Configuration;
 using Microsoft.AspNetCore.TestHost;
@@ -25,26 +26,40 @@ public class HttpTestFixture : WebApplicationFactory<Program>
         ClientOptions.AllowAutoRedirect = false;
     }
 
+    // Called first before application setup
+    protected override IHostBuilder? CreateHostBuilder()
+    {
+        // Set-up Serilog to log to console. This BootstrapLogger is replaced below after startup
+        Log.Logger = new LoggerConfiguration()
+            .MinimumLevel.Override("Microsoft", LogEventLevel.Information)
+            .Enrich.FromLogContext()
+            .Enrich.WithProperty(SerilogProperties.EnvironmentName, TestEnvironmentName)
+            .Enrich.WithMachineName()
+            .Enrich.WithProcessId()
+            .WriteTo.Console(formatProvider: CultureInfo.InvariantCulture)
+            .CreateBootstrapLogger();
+
+        LogMethodName();
+
+        return base.CreateHostBuilder();
+    }
+
+    // Called second before application setup
+    protected override IWebHostBuilder? CreateWebHostBuilder()
+    {
+        LogMethodName();
+
+        return base.CreateWebHostBuilder();
+    }
+
+    // Called third before application setup
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
         ArgumentNullException.ThrowIfNull(builder);
 
-        // ConfigureWebHost is executed before any code in the application code, e.g. Program
-        // The builder.ConfigureXYZ methods, e.g. ConfigureAppConfiguration, are executed AFTER the same methods in Program,
-        Console.WriteLine($"Test code: {nameof(ConfigureWebHost)}");
+        LogMethodName();
 
         _ = builder.UseEnvironment(TestEnvironmentName);
-
-        // Set-up Serilog to use XUnit TestOutputHelper. Not injecting this instance because Log.Logger is a bootstrap logger and will be
-        // overwritten during start-up
-        Log.Logger = new LoggerConfiguration()
-                .MinimumLevel.Override("Microsoft", LogEventLevel.Information)
-                .Enrich.FromLogContext()
-                .Enrich.WithProperty(SerilogProperties.EnvironmentName, TestEnvironmentName)
-                .Enrich.WithMachineName()
-                .Enrich.WithProcessId()
-                .WriteTo.Console(formatProvider: CultureInfo.InvariantCulture)
-                .CreateBootstrapLogger();
 
         builder.ConfigureAppConfiguration(configurationBuilder =>
         {
@@ -59,28 +74,17 @@ public class HttpTestFixture : WebApplicationFactory<Program>
         _ = builder.ConfigureServices((webHostBuilderContext, services) => { });
     }
 
-    protected override IHostBuilder? CreateHostBuilder()
-    {
-        Console.WriteLine($"Test code: {nameof(CreateHostBuilder)}");
-        return base.CreateHostBuilder();
-    }
-
-    protected override IWebHostBuilder? CreateWebHostBuilder()
-    {
-
-        Console.WriteLine($"Test code: {nameof(CreateWebHostBuilder)}");
-        return base.CreateWebHostBuilder();
-    }
-
+    // Called fourth before application setup
     protected override IHost CreateHost(IHostBuilder builder)
     {
-        Console.WriteLine($"Test code: {nameof(CreateHost)}");
+        LogMethodName();
+
         return base.CreateHost(builder);
     }
 
     protected override TestServer CreateServer(IWebHostBuilder builder)
     {
-        Console.WriteLine($"Test code: {nameof(CreateServer)}");
+        LogMethodName();
 
         builder.ConfigureLogging(loggingBuilder =>
         {
@@ -101,7 +105,13 @@ public class HttpTestFixture : WebApplicationFactory<Program>
 
     protected override void ConfigureClient(HttpClient client)
     {
-        Console.WriteLine($"Test code: {nameof(ConfigureClient)}");
+        LogMethodName();
+
         base.ConfigureClient(client);
+    }
+
+    private static void LogMethodName([CallerMemberName] string callerName = "")
+    {
+        Log.Information("Test Fixture: {ClassName}.{MethodName}",nameof(HttpTestFixture), callerName);
     }
 }

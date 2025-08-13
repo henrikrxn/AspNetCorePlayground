@@ -1,11 +1,16 @@
+using Microsoft.Extensions.Logging;
+
 namespace AspNetCorePlayground.WebApi.HttpIntegration;
 
 [Collection(ResumeAppCollectionFixture.Name)]
 public sealed class ApiTests
 {
-    public ApiTests(HttpTestFixture fixture)
+    private readonly ITestOutputHelper _testOutputHelper;
+
+    public ApiTests(HttpTestFixture fixture, ITestOutputHelper testOutputHelper)
     {
         Fixture = fixture;
+        _testOutputHelper = testOutputHelper;
     }
 
     private HttpTestFixture Fixture { get; }
@@ -16,7 +21,7 @@ public sealed class ApiTests
         // Arrange
         using HttpClient client = Fixture.CreateClient();
         IWebHostEnvironment webHostEnvironment = Fixture.Services.GetRequiredService<IWebHostEnvironment>();
-        Console.WriteLine("Test code: Environment={0}", webHostEnvironment.EnvironmentName);
+        _testOutputHelper.WriteLine("Test code: Environment={0}", webHostEnvironment.EnvironmentName);
 
         // Act
         WeatherForecast[]? forecasts = await client.GetFromJsonAsync<WeatherForecast[]>("/weatherforecast", TestContext.Current.CancellationToken);
