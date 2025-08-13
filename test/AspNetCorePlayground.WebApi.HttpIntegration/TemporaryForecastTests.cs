@@ -5,15 +5,16 @@ namespace AspNetCorePlayground.WebApi.HttpIntegration;
 [Collection(ResumeAppCollectionFixture.Name)]
 public sealed class ApiTests
 {
-    private readonly ITestOutputHelper _testOutputHelper;
+
+    private HttpTestFixture Fixture { get; }
+    private ITestOutputHelper TestOutputHelper { get;  }
 
     public ApiTests(HttpTestFixture fixture, ITestOutputHelper testOutputHelper)
     {
         Fixture = fixture;
-        _testOutputHelper = testOutputHelper;
+        TestOutputHelper = testOutputHelper;
     }
 
-    private HttpTestFixture Fixture { get; }
 
     [Fact]
     public async Task WhenCallingWeatherForecast_ThenWeAlwaysGetFiveForecasts()
@@ -21,7 +22,7 @@ public sealed class ApiTests
         // Arrange
         using HttpClient client = Fixture.CreateClient();
         IWebHostEnvironment webHostEnvironment = Fixture.Services.GetRequiredService<IWebHostEnvironment>();
-        _testOutputHelper.WriteLine("Test code: Environment={0}", webHostEnvironment.EnvironmentName);
+        TestOutputHelper.WriteLine("Test code: Environment={0}", webHostEnvironment.EnvironmentName);
 
         // Act
         WeatherForecast[]? forecasts = await client.GetFromJsonAsync<WeatherForecast[]>("/weatherforecast", TestContext.Current.CancellationToken);
