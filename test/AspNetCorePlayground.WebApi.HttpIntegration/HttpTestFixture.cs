@@ -15,8 +15,8 @@ namespace AspNetCorePlayground.WebApi.HttpIntegration;
 
 public class HttpTestFixture : WebApplicationFactory<Program>
 {
-    private static readonly string TestEnvironmentName = MyAdditionalEnvironments.HttpIntegrationTest;
-    private const string CorsAllowedOriginsForTests = "https://a.b.c;https://d.e.f;https://localhost:3000";
+    private static readonly string _testEnvironmentName = MyAdditionalEnvironments.HttpIntegrationTest;
+    private readonly List<string> _corsAllowedOriginsForTests = [ "https://a.b.c", "https://d.e.f", "https://localhost:3000" ];
 
     public HttpTestFixture()
     {
@@ -33,7 +33,7 @@ public class HttpTestFixture : WebApplicationFactory<Program>
         Log.Logger = new LoggerConfiguration()
             .MinimumLevel.Override("Microsoft", LogEventLevel.Information)
             .Enrich.FromLogContext()
-            .Enrich.WithProperty(SerilogProperties.EnvironmentName, TestEnvironmentName)
+            .Enrich.WithProperty(SerilogProperties.EnvironmentName, _testEnvironmentName)
             .Enrich.WithMachineName()
             .Enrich.WithProcessId()
             .WriteTo.Console(formatProvider: CultureInfo.InvariantCulture)
@@ -59,16 +59,19 @@ public class HttpTestFixture : WebApplicationFactory<Program>
 
         LogMethodName();
 
-        _ = builder.UseEnvironment(TestEnvironmentName);
+        _ = builder.UseEnvironment(_testEnvironmentName);
 
+        // Executed after set-up code in Program
         builder.ConfigureAppConfiguration(configurationBuilder =>
         {
-            IList<KeyValuePair<string, string?>> inMemoryCorsValues =
-            [
-                KeyValuePair.Create<string, string?>(ConfigurationPaths.CorsAllowedOrigins, CorsAllowedOriginsForTests)
-            ];
+            IEnumerable<KeyValuePair<string, string?>> inMemoryCorsValues =
+                _corsAllowedOriginsForTests.Select((value, index) => KeyValuePair.Create<string, string?>($"{CorsConfiguration.CorsAllowedOrigins}:{index}", value));
             configurationBuilder.AddInMemoryCollection(inMemoryCorsValues);
+
+            LogMessage($"Inside {nameof(builder.ConfigureAppConfiguration)}");
         });
+
+        var corsSettings = builder.GetSetting(CorsConfiguration.CorsAllowedOrigins);
 
         // Add mock/test services to the builder here
         _ = builder.ConfigureServices((webHostBuilderContext, services) => { });
@@ -79,15 +82,10 @@ public class HttpTestFixture : WebApplicationFactory<Program>
     {
         LogMethodName();
 
-        return base.CreateHost(builder);
-    }
-
-    protected override TestServer CreateServer(IWebHostBuilder builder)
-    {
-        LogMethodName();
-
+        // Executed after set-up code in Program
         builder.ConfigureLogging(loggingBuilder =>
         {
+            LogMessage("Inside CreateHost.ConfigureLogging");
             // Clear all existing providers (like Console, Debug)
             loggingBuilder.ClearProviders();
 
@@ -96,13 +94,22 @@ public class HttpTestFixture : WebApplicationFactory<Program>
                 new LoggerConfiguration()
                     .Enrich.FromLogContext()
                     .WriteTo.Console(formatProvider: CultureInfo.InvariantCulture)
-                    .CreateLogger()
-            );
+                    .CreateLogger());
         });
+
+        return base.CreateHost(builder);
+    }
+
+    // Is only called when using IWebHostBuilder, which is considered
+    // more or less obsolete
+    protected override TestServer CreateServer(IWebHostBuilder builder)
+    {
+        LogMethodName();
 
         return base.CreateServer(builder);
     }
 
+    // Called first after application set-up
     protected override void ConfigureClient(HttpClient client)
     {
         LogMethodName();
@@ -113,5 +120,10 @@ public class HttpTestFixture : WebApplicationFactory<Program>
     private static void LogMethodName([CallerMemberName] string callerName = "")
     {
         Log.Information("Test Fixture: {ClassName}.{MethodName}",nameof(HttpTestFixture), callerName);
+    }
+
+    private static void LogMessage(string message, [CallerMemberName] string callerName = "")
+    {
+        Log.Information("Test Fixture: {ClassName}.{MethodName} - {Message}", nameof(HttpTestFixture), callerName, message);
     }
 }

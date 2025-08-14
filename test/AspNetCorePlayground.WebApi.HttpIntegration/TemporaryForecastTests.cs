@@ -15,7 +15,6 @@ public sealed class ApiTests
         TestOutputHelper = testOutputHelper;
     }
 
-
     [Fact]
     public async Task WhenCallingWeatherForecast_ThenWeAlwaysGetFiveForecasts()
     {
