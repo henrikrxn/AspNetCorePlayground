@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <RootNamespace>AspNetPlayGround.UnitTests</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Content Include="xunit.runner.json" CopyToOutputDirectory="PreserveNewest"/>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk"/>
+    <PackageReference Include="xunit.v3"/>
+    <PackageReference Include="xunit.analyzers"/>
+    <PackageReference Include="NSubstitute" />
+    <PackageReference Include="Shouldly" />
+    <PackageReference Include="Microsoft.CodeCoverage"/>
+    <PackageReference Include="Microsoft.Testing.Extensions.CodeCoverage"/>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\AspNetCorePlayground\AspNetCorePlayground.csproj" />
+  </ItemGroup>
+
+</Project>

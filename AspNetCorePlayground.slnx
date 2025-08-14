@@ -4,5 +4,6 @@
   </Folder>
   <Folder Name="/test/">
     <Project Path="test/AspNetCorePlayground.WebApi.HttpIntegration/AspNetCorePlayground.WebApi.HttpIntegration.csproj" />
+    <Project Path="test/AspNetCorePlayground.UnitTests/AspNetCorePlayground.UnitTests.csproj" Type="Classic C#" />
   </Folder>
 </Solution>
