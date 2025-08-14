@@ -2,6 +2,7 @@ using System.Diagnostics;
 using AspNetCorePlayground;
 using AspNetCorePlayground.Plumbing;
 using AspNetCorePlayground.Plumbing.Configuration;
+using AspNetCorePlayground.Plumbing.Setup.Configuration;
 using AspNetCorePlayground.Plumbing.Setup.Cors;
 using AspNetCorePlayground.Plumbing.Setup.Endpoints;
 using Microsoft.AspNetCore.HttpLogging;
@@ -37,18 +38,7 @@ try
 
     Log.Information("Environment: {environmentName}", builder.Environment.EnvironmentName);
 
-    _ = builder.Services.AddOptions<CorsConfiguration>()
-        .Bind(builder.Configuration.GetSection(CorsConfiguration.SectionName), options =>
-        {
-            Log.Information("Inside Bind method");
-        })
-        .ValidateDataAnnotations()
-        .ValidateOnStart();
-
-    _ = builder.Services.AddOptions<DictionaryConfiguration>()
-        .Bind(builder.Configuration.GetSection(DictionaryConfiguration.SectionName))
-        .ValidateDataAnnotations()
-        .ValidateOnStart();
+    builder.SetupConfigurationValidation();
 
     if (builder.Environment.IsDevelopment())
     {
@@ -125,7 +115,7 @@ try
 catch (Exception ex)
 #pragma warning restore CA1031
 {
-    Log.Fatal(ex, "Unhandled problems during application setup and startup");
+    Log.Fatal(ex, "Unhandled problems during application setup");
     Log.Information("Flushing and closing Serilog");
     Log.CloseAndFlush();
 
@@ -224,7 +214,7 @@ namespace AspNetCorePlayground
         [LoggerMessage(EventId = 96, Level = LogLevel.Information, Message = "Starting application")]
         public static partial void StartingApplication(this ILogger logger);
 
-        [LoggerMessage(EventId = 97, Level = LogLevel.Critical, Message = "Unhandled problems during application setup and startup")]
+        [LoggerMessage(EventId = 97, Level = LogLevel.Critical, Message = "Unhandled problems during application startup")]
         public static partial void CriticalErrorDuringStartup(this ILogger logger, Exception exception);
 
         [LoggerMessage(EventId = 98,  Level = LogLevel.Information, Message = "Application stopped normally")]
