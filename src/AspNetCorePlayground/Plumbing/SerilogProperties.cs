@@ -2,5 +2,5 @@ namespace AspNetCorePlayground.Plumbing;
 
 public static class SerilogProperties
 {
-    public const string EnvironmentName = "EnvironmentName";
+    public const string EnvironmentName = "environmentName";
 }

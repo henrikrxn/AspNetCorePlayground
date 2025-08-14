@@ -3,7 +3,7 @@ using System.Security.Cryptography;
 using AspNetCorePlayground.Plumbing.Configuration;
 using Microsoft.Extensions.Options;
 
-namespace AspNetCorePlayground.Plumbing.Endpoints;
+namespace AspNetCorePlayground.Plumbing.Setup.Endpoints;
 
 public static class RegisterApplicationEndpoints
 {

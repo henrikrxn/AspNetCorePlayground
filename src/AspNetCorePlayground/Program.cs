@@ -1,14 +1,11 @@
-using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
-using System.Net;
-using System.Security.Cryptography;
 using AspNetCorePlayground;
 using AspNetCorePlayground.Plumbing;
 using AspNetCorePlayground.Plumbing.Configuration;
-using AspNetCorePlayground.Plumbing.Endpoints;
+using AspNetCorePlayground.Plumbing.Setup.Cors;
+using AspNetCorePlayground.Plumbing.Setup.Endpoints;
 using Microsoft.AspNetCore.HttpLogging;
 using Microsoft.Extensions.Logging.Abstractions;
-using Microsoft.Extensions.Options;
 using Serilog;
 using Serilog.Events;
 using ILogger = Microsoft.Extensions.Logging.ILogger;
@@ -30,7 +27,7 @@ else
     Log.Information("Logger already set-up. Skipping Bootstrap logger");
 }
 
-WebApplicationBuilder? builder = null;
+WebApplicationBuilder? builder;
 
 try
 {
@@ -40,9 +37,18 @@ try
 
     Log.Information("Environment: {environmentName}", builder.Environment.EnvironmentName);
 
-    _ = builder.Services.AddOptionsWithValidateOnStart<DictionaryConfiguration>()
+    _ = builder.Services.AddOptions<CorsConfiguration>()
+        .Bind(builder.Configuration.GetSection(CorsConfiguration.SectionName), options =>
+        {
+            Log.Information("Inside Bind method");
+        })
+        .ValidateDataAnnotations()
+        .ValidateOnStart();
+
+    _ = builder.Services.AddOptions<DictionaryConfiguration>()
         .Bind(builder.Configuration.GetSection(DictionaryConfiguration.SectionName))
-        .ValidateDataAnnotations();
+        .ValidateDataAnnotations()
+        .ValidateOnStart();
 
     if (builder.Environment.IsDevelopment())
     {
@@ -156,47 +162,8 @@ try {
 
     // This must be before CORS : app.UseRouting();
 
-    // TODO Look into CORS set-up for Minimal API
-    app.UseCors(corsPolicyBuilder =>
-    {
-        // TODO Can this be moved back up in 'ConfigureServices' after .NET 6 wih the new cool way of having "things" ready earlier ?
-        corsPolicyBuilder
-            .AllowAnyHeader()
-            .AllowAnyMethod(); // TODO look into narrowing this
-
-        var allowedOriginsConfigSection =
-            builder.Configuration.GetSection(ConfigurationPaths.CorsAllowedOrigins);
-        var semicolonSeparatedOrigins = allowedOriginsConfigSection.Get<string>() ??
-                                        throw new ValidationException($"Configuration path '{ConfigurationPaths.CorsAllowedOrigins}' must contain at least one CORS allowed origin");
-        var allowedOrigins =
-            semicolonSeparatedOrigins.Split(';', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
-
-        // TODO Move all this to a separate configuration object
-        if (allowedOrigins.Length > 0)
-        {
-            if (allowedOrigins.Any(origin => "*".Equals(origin)))
-            {
-                corsPolicyBuilder.AllowAnyOrigin();
-            }
-            else
-            {
-                foreach (var origin in allowedOrigins)
-                {
-                    if (!Uri.TryCreate(origin, UriKind.Absolute, out _))
-                    {
-                        throw new ValidationException(
-                            $"Origin '{origin}' in configuration path '{ConfigurationPaths.CorsAllowedOrigins}' cannot be parsed as an Uri");
-                    }
-                }
-
-                corsPolicyBuilder.WithOrigins(allowedOrigins);
-            }
-        }
-        else
-        {
-            throw new ValidationException($"Configuration path '{ConfigurationPaths.CorsAllowedOrigins}' must contain at least one CORS allowed origin");
-        }
-    });
+    // CORS TODO Look more into CORS set-up for Minimal API
+    _ = app.Cors();
 
     // This must be after CORS : app.UseAuthorization();
 
