@@ -30,11 +30,11 @@ public class CorsConfiguration : IValidatableObject
 
         foreach (var origin in AllowedOrigins)
         {
-            if (!Uri.TryCreate(origin, UriKind.Absolute, out _))
-            {
-                yield return new ValidationResult(errorMessage: $"Origin '{origin}' in configuration path '{CorsAllowedOrigins}' cannot be parsed as an absolute Uri",
-                                                  memberNames:[ nameof(AllowedOrigins) ]);
-            }
+            if (origin.StartsWith("http") && Uri.IsWellFormedUriString(origin, UriKind.Absolute)) continue;
+
+            Console.WriteLine($"Entry could not be parsed as a valid absolute URI: '{origin}'");
+            yield return new ValidationResult(errorMessage: $"Origin '{origin}' in configuration path '{CorsAllowedOrigins}' cannot be parsed as an absolute Uri",
+                                              memberNames:[ nameof(AllowedOrigins) ]);
         }
     }
 }
