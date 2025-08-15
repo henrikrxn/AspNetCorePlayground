@@ -102,11 +102,10 @@ public class CorsConfigurationTests
 
         // Assert
         isValid.ShouldBeFalse();
-        validationResults.ShouldHaveSingleItem();
-        ValidationResult failure = validationResults.First();
+        ValidationResult failure = validationResults.ShouldHaveSingleItem();
         failure.ErrorMessage.ShouldBe(CorsConfiguration.NoOriginsErrorMessage);
-        failure.MemberNames.ShouldHaveSingleItem();
-        failure.MemberNames.First().ShouldBe(nameof(input.AllowedOrigins));
+        string memberNames = failure.MemberNames.ShouldHaveSingleItem();
+        memberNames.ShouldBe(nameof(input.AllowedOrigins));
     }
 
     [Fact]
@@ -126,13 +125,12 @@ public class CorsConfigurationTests
 
         // Assert
         isValid.ShouldBeFalse();
-        validationResults.ShouldHaveSingleItem();
-        ValidationResult failure = validationResults.First();
-        failure.ErrorMessage.ShouldNotBeNull();
-        failure.ErrorMessage.ShouldContain(relativeUri);
-        failure.ErrorMessage.ShouldContain("cannot be parsed as an absolute Uri");
-        failure.MemberNames.ShouldHaveSingleItem();
-        failure.MemberNames.First().ShouldBe(nameof(input.AllowedOrigins));
+        ValidationResult failure = validationResults.ShouldHaveSingleItem();
+        string errorMessage = failure.ErrorMessage.ShouldNotBeNull();
+        errorMessage.ShouldContain(relativeUri);
+        errorMessage.ShouldContain("cannot be parsed as an absolute Uri");
+        string memberNames = failure.MemberNames.ShouldHaveSingleItem();
+        memberNames.ShouldBe(nameof(input.AllowedOrigins));
     }
 
     [Fact]
