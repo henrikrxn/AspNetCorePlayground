@@ -1,12 +1,17 @@
 using System.Diagnostics;
 using AspNetCorePlayground;
 using AspNetCorePlayground.Plumbing;
-using AspNetCorePlayground.Plumbing.Configuration;
 using AspNetCorePlayground.Plumbing.Setup.Configuration;
 using AspNetCorePlayground.Plumbing.Setup.Cors;
 using AspNetCorePlayground.Plumbing.Setup.Endpoints;
 using Microsoft.AspNetCore.HttpLogging;
 using Microsoft.Extensions.Logging.Abstractions;
+using OpenTelemetry;
+using OpenTelemetry.Logs;
+using OpenTelemetry.Exporter;
+using OpenTelemetry.Metrics;
+using OpenTelemetry.Resources;
+using OpenTelemetry.Trace;
 using Serilog;
 using Serilog.Events;
 using ILogger = Microsoft.Extensions.Logging.ILogger;
@@ -62,7 +67,19 @@ try
     // Clearing the pre-registered providers so we know exactly what has been setup
     _ = builder.Logging.ClearProviders();
 
-    // New ASP.NET Core 8 HTTP logging
+    // OpenTelemetry
+    builder.Services
+        .AddOpenTelemetry()
+        .UseOtlpExporter()
+        .ConfigureResource(resourceBuilder => resourceBuilder.AddService(builder.Environment.ApplicationName))
+        .WithTracing(traceProviderBuilder =>
+            traceProviderBuilder.AddAspNetCoreInstrumentation())
+        .WithMetrics(meterProviderBuilder =>
+            meterProviderBuilder.AddAspNetCoreInstrumentation())
+        .WithLogging();
+         // TODO Try using in-memory exporter in tests
+
+    // New ASP.NET Core 8 HTTP logging (TODO Results in duplicate logging after OpenTelemetry introduced)
     _ = builder.Services.AddHttpLogging(logging =>
     {
         logging.LoggingFields = HttpLoggingFields.All;

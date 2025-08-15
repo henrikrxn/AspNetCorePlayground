@@ -21,10 +21,7 @@ public static class ConfigurationValidation
         ArgumentNullException.ThrowIfNull(builder);
 
         _ = builder.Services.AddOptions<CorsConfiguration>()
-            .Bind(builder.Configuration.GetSection(CorsConfiguration.SectionName), options =>
-            {
-                Log.Information("Inside Bind method");
-            })
+            .Bind(builder.Configuration.GetSection(CorsConfiguration.SectionName))
             .ValidateDataAnnotations()
             .ValidateOnStart();
 
