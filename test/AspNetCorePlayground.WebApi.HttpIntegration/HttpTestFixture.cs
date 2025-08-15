@@ -62,11 +62,11 @@ public class HttpTestFixture : WebApplicationFactory<Program>
         _ = builder.UseEnvironment(_testEnvironmentName);
 
         // Executed after set-up code in Program
-        builder.ConfigureAppConfiguration(configurationBuilder =>
+        _ = builder.ConfigureAppConfiguration(configurationBuilder =>
         {
             IEnumerable<KeyValuePair<string, string?>> inMemoryCorsValues =
                 _corsAllowedOriginsForTests.Select((value, index) => KeyValuePair.Create<string, string?>($"{CorsConfiguration.CorsAllowedOrigins}:{index}", value));
-            configurationBuilder.AddInMemoryCollection(inMemoryCorsValues);
+            _ = configurationBuilder.AddInMemoryCollection(inMemoryCorsValues);
 
             LogMessage($"Inside {nameof(builder.ConfigureAppConfiguration)}");
         });
@@ -83,14 +83,14 @@ public class HttpTestFixture : WebApplicationFactory<Program>
         LogMethodName();
 
         // Executed after set-up code in Program
-        builder.ConfigureLogging(loggingBuilder =>
+        _ = builder.ConfigureLogging(loggingBuilder =>
         {
             LogMessage("Inside CreateHost.ConfigureLogging");
             // Clear all existing providers (like Console, Debug)
-            loggingBuilder.ClearProviders();
+            _ = loggingBuilder.ClearProviders();
 
             // Configure Serilog to work with the ILoggerFactory
-            loggingBuilder.AddSerilog(
+            _ = loggingBuilder.AddSerilog(
                 new LoggerConfiguration()
                     .Enrich.FromLogContext()
                     .WriteTo.Console(formatProvider: CultureInfo.InvariantCulture)
