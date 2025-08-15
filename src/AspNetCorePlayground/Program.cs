@@ -38,7 +38,7 @@ try
 
     Log.Information("Environment: {environmentName}", builder.Environment.EnvironmentName);
 
-    builder.SetupConfigurationValidation();
+    _ = builder.SetupConfigurationValidation();
 
     if (builder.Environment.IsDevelopment())
     {

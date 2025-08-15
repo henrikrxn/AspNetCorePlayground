@@ -1,6 +1,5 @@
 using System.ComponentModel.DataAnnotations;
 using AspNetCorePlayground.Plumbing.Configuration;
-using Microsoft.Extensions.Options;
 
 namespace AspNetPlayGround.UnitTests;
 
