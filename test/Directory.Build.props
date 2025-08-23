@@ -21,13 +21,14 @@
   </ItemGroup>
 
   <PropertyGroup Label="Use Microsoft Testing Platform">
+    <!-- xunit.v3 setting -->
     <UseMicrosoftTestingPlatformRunner>true</UseMicrosoftTestingPlatformRunner>
-    <TestingPlatformDotnetTestSupport>true</TestingPlatformDotnetTestSupport>
   </PropertyGroup>
 
   <PropertyGroup Label="Use Microsoft Code coverage">
     <!-- When no C++ code then it is recommended to disable these two, see -->
     <EnableStaticNativeInstrumentation>False</EnableStaticNativeInstrumentation>
     <EnableDynamicNativeInstrumentation>False</EnableDynamicNativeInstrumentation>
+    <IncludeTestAssembly>False</IncludeTestAssembly>
   </PropertyGroup>
 </Project>
