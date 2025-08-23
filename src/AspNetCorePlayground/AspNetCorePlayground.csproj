@@ -23,7 +23,6 @@
     <PackageReference Include="Serilog.Enrichers.Environment" />
     <PackageReference Include="Serilog.Enrichers.Process" />
     <PackageReference Include="Serilog.Settings.Configuration" />
-    <PackageReference Include="System.Text.Json" />
   </ItemGroup>
 
 </Project>
