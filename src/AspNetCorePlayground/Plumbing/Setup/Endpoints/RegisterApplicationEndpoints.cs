@@ -24,8 +24,7 @@ public static class RegisterApplicationEndpoints
                     .ToArray();
                 return forecast;
             })
-            .WithName("GetWeatherForecast")
-            .WithOpenApi();
+            .WithName("GetWeatherForecast");
 
         _ = app.MapGet("/throws", static (ILogger<Program> logger) =>
         {

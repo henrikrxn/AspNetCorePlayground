@@ -2,7 +2,7 @@
 <Project>
   <Import Project="$([MSBuild]::GetPathOfFileAbove('Directory.Packages.props', '$(MSBuildThisFileDirectory)../'))" />
   <ItemGroup>
-    <PackageVersion Include="Microsoft.AspNetCore.OpenApi" Version="9.0.8" />
+    <PackageVersion Include="Microsoft.AspNetCore.OpenApi" Version="10.0.0-preview.7.25380.108" />
     <PackageVersion Include="OpenTelemetry" Version="1.12.0" />
     <PackageVersion Include="OpenTelemetry.Exporter.Console" Version="1.12.0" />
     <PackageVersion Include="OpenTelemetry.Exporter.OpenTelemetryProtocol" Version="1.12.0" />
