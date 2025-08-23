@@ -29,5 +29,6 @@
     <!-- When no C++ code then it is recommended to disable these two, see -->
     <EnableStaticNativeInstrumentation>False</EnableStaticNativeInstrumentation>
     <EnableDynamicNativeInstrumentation>False</EnableDynamicNativeInstrumentation>
+    <IncludeTestAssembly>False</IncludeTestAssembly>
   </PropertyGroup>
 </Project>
