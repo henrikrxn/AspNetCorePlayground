@@ -35,7 +35,7 @@ jobs:
     - name: Build
       run: dotnet build --no-restore --check
     - name: Test
-      run: dotnet test --no-build --verbosity normal --logger "console;verbosity=detailed"
+      run: dotnet test --no-restore --no-build --verbosity normal -- --coverage --coverage-output-format cobertura --coverage-output coverage.cobertura.xml
     - name: Upload a build artifact
       if: always()
       uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
