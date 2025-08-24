@@ -39,7 +39,7 @@ jobs:
     - name: Install tools for test coverage reporting
       run: dotnet tool restore
     - name: Merge cobertura files
-      run: dotnet coverage merge **/coverage.cobertura.xml --output test/TestResults/merged-coverage.cobertura.xml
+      run: dotnet coverage merge **/coverage.cobertura.xml --output-format cobertura --output test/TestResults/merged-coverage.cobertura.xml
     - name: Upload a build artifact
       if: always()
       uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
@@ -48,3 +48,4 @@ jobs:
         path: |
           test/**/*_net10.0_x64.log
           test/TestResults/merged-coverage.cobertura.xml
+          test/**/coverage.cobertura.xml
