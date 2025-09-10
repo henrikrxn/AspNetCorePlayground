@@ -100,15 +100,6 @@ public class HttpTestFixture : WebApplicationFactory<Program>
         return base.CreateHost(builder);
     }
 
-    // Is only called when using IWebHostBuilder, which is considered
-    // more or less obsolete
-    protected override TestServer CreateServer(IWebHostBuilder builder)
-    {
-        LogMethodName();
-
-        return base.CreateServer(builder);
-    }
-
     // Called first after application set-up
     protected override void ConfigureClient(HttpClient client)
     {
