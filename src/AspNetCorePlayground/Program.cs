@@ -7,8 +7,6 @@ using AspNetCorePlayground.Plumbing.Setup.Endpoints;
 using Microsoft.AspNetCore.HttpLogging;
 using Microsoft.Extensions.Logging.Abstractions;
 using OpenTelemetry;
-using OpenTelemetry.Logs;
-using OpenTelemetry.Exporter;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
@@ -163,7 +161,7 @@ try {
     // The normal Microsoft request logging
     _ = app.UseHttpLogging();
 
-    _ = app.UseHttpsRedirection();
+    _ = app.UseHttpsRedirection(); // TODO Some sources say not to use this. Investigate....
 
     // Before or after CORS ? : app.UseStaticFiles();
 
