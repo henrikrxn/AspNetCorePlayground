@@ -248,7 +248,7 @@ namespace AspNetCorePlayground
         [LoggerMessage(EventId = 102, Level = LogLevel.Information, Message = "Internal Server Error")]
         public static partial void InternalServerError(this ILogger logger);
 
-        [LoggerMessage(EventId = 102, Level = LogLevel.Information, Message = "Getting configuration")]
+        [LoggerMessage(EventId = 103, Level = LogLevel.Information, Message = "Getting configuration")]
         public static partial void GettingConfiguration(this ILogger logger);
     }
 }
