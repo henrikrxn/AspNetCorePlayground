@@ -4,6 +4,7 @@
     <InvariantGlobalization>true</InvariantGlobalization>
     <!-- Ignoring CA2007 "Consider adding .ConfigureAwait(false)" as web root project is never a library -->
     <WarningsNotAsErrors>$(WarningsNotAsErrors);CA2007</WarningsNotAsErrors>
+    <OpenApiGenerateDocuments>true</OpenApiGenerateDocuments>
   </PropertyGroup>
 
   <ItemGroup>
