@@ -57,7 +57,7 @@ try
             options.ValidateOnBuild = true;
         });
 
-        _ = builder.Configuration.AddUserSecrets(typeof(AspNetCorePlayground.Program).Assembly, optional: true, reloadOnChange: true);
+        _ = builder.Configuration.AddUserSecrets(typeof(MyAdditionalEnvironments).Assembly, optional: true, reloadOnChange: true);
     }
 
     // Logging in general
@@ -205,16 +205,6 @@ namespace AspNetCorePlayground
     internal sealed record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
     {
         public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
-    }
-
-// Expose the Program class so that WebApplicationFactory<T> can access it
-// TODO Remove pragmas once .NET 10 becomes RTM
-#pragma warning disable CA1052
-#pragma warning disable CA1515
-    public partial class Program
-#pragma warning restore CA1515
-#pragma warning restore CA1052
-    {
     }
 
     internal static partial class MyLoggerExtensions
