@@ -66,7 +66,7 @@ try
     _ = builder.Logging.ClearProviders();
 
     // OpenTelemetry
-    builder.Services
+    _ = builder.Services
         .AddOpenTelemetry()
         .UseOtlpExporter()
         .ConfigureResource(resourceBuilder => resourceBuilder.AddService(builder.Environment.ApplicationName))
@@ -147,8 +147,6 @@ try {
     loggerAfterBuild.UsingEnvironment(builder.Environment.EnvironmentName);
     loggerAfterBuild.AddingMiddleware();
 
-    _ = app.MapOpenApi();
-
     // Configure the HTTP request pipeline.
     if (app.Environment.IsDevelopment())
     {
@@ -156,6 +154,8 @@ try {
         {
             options.SwaggerEndpoint("/openapi/v1.json", "v1");
         });
+
+        _ = app.MapOpenApi();
     }
 
     // The normal Microsoft request logging
