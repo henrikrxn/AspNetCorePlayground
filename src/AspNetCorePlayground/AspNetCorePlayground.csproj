@@ -4,7 +4,12 @@
     <InvariantGlobalization>true</InvariantGlobalization>
     <!-- Ignoring CA2007 "Consider adding .ConfigureAwait(false)" as web root project is never a library -->
     <WarningsNotAsErrors>$(WarningsNotAsErrors);CA2007</WarningsNotAsErrors>
+  </PropertyGroup>
+
+  <PropertyGroup Label="OpenApi configuration">
     <OpenApiGenerateDocuments>true</OpenApiGenerateDocuments>
+    <OpenApiGenerateDocumentsOptions>--file-name v1</OpenApiGenerateDocumentsOptions>
+    <OpenApiDocumentsDirectory>$(MSBuildProjectDirectory)/build/openapi</OpenApiDocumentsDirectory>
   </PropertyGroup>
 
   <ItemGroup>
