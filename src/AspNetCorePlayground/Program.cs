@@ -1,10 +1,16 @@
+using System;
 using System.Diagnostics;
 using AspNetCorePlayground;
 using AspNetCorePlayground.Plumbing;
 using AspNetCorePlayground.Plumbing.Setup.Configuration;
 using AspNetCorePlayground.Plumbing.Setup.Cors;
 using AspNetCorePlayground.Plumbing.Setup.Endpoints;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.HttpLogging;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using OpenTelemetry;
 using OpenTelemetry.Metrics;
@@ -41,6 +47,9 @@ try
 
     Log.Information("Environment: {environmentName}", builder.Environment.EnvironmentName);
 
+    _ = builder.Services.AddValidation();
+
+    // Fail-fast validation of configuration
     _ = builder.SetupConfigurationValidation();
 
     if (builder.Environment.IsDevelopment())
