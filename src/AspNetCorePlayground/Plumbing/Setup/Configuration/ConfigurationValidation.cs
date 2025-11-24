@@ -1,5 +1,7 @@
+using System;
 using AspNetCorePlayground.Plumbing.Configuration;
-using Serilog;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace AspNetCorePlayground.Plumbing.Setup.Configuration;
 
