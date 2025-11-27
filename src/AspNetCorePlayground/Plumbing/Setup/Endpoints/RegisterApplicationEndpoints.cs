@@ -40,7 +40,7 @@ public static class RegisterApplicationEndpoints
             return TypedResults.InternalServerError("Something went wrong!");
         });
 
-        _ = app.MapGet("/config/dictionary", (ILogger<Program> logger, IOptions<DictionaryConfiguration> dictionaryOptions) =>
+        _ = app.MapGet("/config/dictionary", static (ILogger<Program> logger, IOptions<DictionaryConfiguration> dictionaryOptions) =>
         {
             logger.GettingConfiguration();
 
@@ -49,6 +49,14 @@ public static class RegisterApplicationEndpoints
             return dictionary.Items is { Count: > 0 } ? Results.Ok(dictionary.Items) : Results.NotFound("Configuration items not found.");
         });
 
+        _ = app.MapGet("/config/list", static (ILogger<Program> logger, IOptions<ListConfiguration> listOptions) =>
+        {
+            logger.GettingConfiguration();
+
+            ListConfiguration list = listOptions.Value;
+
+            return list.Items is { Count: > 0 } ? Results.Ok(list.Items) : Results.NotFound("Configuration items not found.");
+        });
 
         return app;
     }
