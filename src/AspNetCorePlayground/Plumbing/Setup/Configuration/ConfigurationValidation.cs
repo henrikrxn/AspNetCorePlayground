@@ -1,7 +1,4 @@
-using System;
 using AspNetCorePlayground.Plumbing.Configuration;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace AspNetCorePlayground.Plumbing.Setup.Configuration;
 
@@ -15,6 +12,8 @@ public static class ConfigurationValidation
 
         _ = builder.SetupDictionaryConfigurationValidation();
 
+        _ = builder.SetupListConfigurationValidation();
+
         return builder;
     }
 
@@ -23,7 +22,7 @@ public static class ConfigurationValidation
         ArgumentNullException.ThrowIfNull(builder);
 
         _ = builder.Services.AddOptions<CorsConfiguration>()
-            .Bind(builder.Configuration.GetSection(CorsConfiguration.SectionName))
+            .BindConfiguration(CorsConfiguration.SectionName)
             .ValidateDataAnnotations()
             .ValidateOnStart();
 
@@ -35,7 +34,19 @@ public static class ConfigurationValidation
         ArgumentNullException.ThrowIfNull(builder);
 
         _ = builder.Services.AddOptions<DictionaryConfiguration>()
-            .Bind(builder.Configuration.GetSection(DictionaryConfiguration.SectionName))
+            .BindConfiguration(DictionaryConfiguration.SectionName)
+            .ValidateDataAnnotations()
+            .ValidateOnStart();
+
+        return builder;
+    }
+
+    public static WebApplicationBuilder SetupListConfigurationValidation(this WebApplicationBuilder builder)
+    {
+        ArgumentNullException.ThrowIfNull(builder);
+
+        _ = builder.Services.AddOptions<ListConfiguration>()
+            .BindConfiguration(ListConfiguration.SectionName)
             .ValidateDataAnnotations()
             .ValidateOnStart();
 
