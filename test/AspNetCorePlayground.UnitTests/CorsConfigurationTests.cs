@@ -150,15 +150,5 @@ public class CorsConfigurationTests
 
         // Assert
         Assert.False(isValid);
-        /*
-        isValid.ShouldBeFalse();
-        validationResults.ShouldHaveSingleItem();
-        ValidationResult failure = validationResults.First();
-        failure.ErrorMessage.ShouldNotBeNull();
-        failure.ErrorMessage.ShouldContain(relativeUri);
-        failure.ErrorMessage.ShouldContain("cannot be parsed as an absolute Uri");
-        failure.MemberNames.ShouldHaveSingleItem();
-        failure.MemberNames.First().ShouldBe(nameof(input.AllowedOrigins));
-        */
     }
 }
