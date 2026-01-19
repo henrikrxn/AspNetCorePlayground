@@ -1,16 +1,10 @@
-using System;
 using System.Diagnostics;
 using AspNetCorePlayground;
 using AspNetCorePlayground.Plumbing;
 using AspNetCorePlayground.Plumbing.Setup.Configuration;
 using AspNetCorePlayground.Plumbing.Setup.Cors;
 using AspNetCorePlayground.Plumbing.Setup.Endpoints;
-using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.HttpLogging;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using OpenTelemetry;
 using OpenTelemetry.Metrics;
