@@ -10,6 +10,7 @@ using OpenTelemetry;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
+using Scalar.AspNetCore;
 using Serilog;
 using Serilog.Events;
 using ILogger = Microsoft.Extensions.Logging.ILogger;
@@ -123,7 +124,7 @@ try
     // If I ever want to use "services.AddResponseCaching();" it has to be after CORS
 
     // Add services to the container.
-    // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+    // Learn more about configuring OpenAPI at https://learn.microsoft.com/en-us/aspnet/core/fundamentals/openapi/overview
     _ = builder.Services.AddEndpointsApiExplorer();
     _ = builder.Services.AddOpenApi();
 
@@ -153,12 +154,8 @@ try {
     // Configure the HTTP request pipeline.
     if (app.Environment.IsDevelopment())
     {
-        _ = app.UseSwaggerUI(options =>
-        {
-            options.SwaggerEndpoint("/openapi/v1.json", "v1");
-        });
-
         _ = app.MapOpenApi();
+        _ = app.MapScalarApiReference();
     }
 
     // The normal Microsoft request logging
