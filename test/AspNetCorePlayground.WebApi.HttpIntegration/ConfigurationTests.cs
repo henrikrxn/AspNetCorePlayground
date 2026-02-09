@@ -47,6 +47,13 @@ public sealed class ConfigurationTests
 
         // Assert
         var listConfiguration = listConfigurationResponse.ShouldNotBeNull();
+        // This shows the danger with using lists.
+        // Environment specific appsettings files do not REPLACE the entire list, only the
         listConfiguration.Count.ShouldBe(3);
+        // You would think that these two would be the only elements, but you'll be wrong
+        listConfiguration[0].ShouldBe("Fourth");
+        listConfiguration[1].ShouldBe("Fifth");
+        // The Third element from appsettings.json "survives"
+        listConfiguration[2].ShouldBe("Third");
     }
 }

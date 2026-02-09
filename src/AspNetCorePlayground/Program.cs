@@ -14,7 +14,7 @@ using Serilog;
 using Serilog.Events;
 using ILogger = Microsoft.Extensions.Logging.ILogger;
 
-// This enables ASP.NET Core HTTP integration tests to setup Serilog so that tests gets logging
+// This enables ASP.NET Core HTTP integration tests to set up Serilog so that tests gets logging
 if (Log.Logger == Serilog.Core.Logger.None)
 {
     Log.Logger = new LoggerConfiguration()
@@ -41,6 +41,8 @@ try
 
     Log.Information("Environment: {environmentName}", builder.Environment.EnvironmentName);
 
+    // TODO Add code using this
+    // Introduced in .NET 10 validation for Minimal API
     _ = builder.Services.AddValidation();
 
     // Fail-fast validation of configuration
@@ -60,12 +62,13 @@ try
             options.ValidateOnBuild = true;
         });
 
+        // Check out if this still is necessary in .NET 10? Not according to Gemini...
         _ = builder.Configuration.AddUserSecrets(typeof(MyAdditionalEnvironments).Assembly, optional: true, reloadOnChange: true);
     }
 
     // Logging in general
 
-    // Clearing the pre-registered providers so we know exactly what has been setup
+    // Clearing the pre-registered providers so we know exactly what has been set up
     _ = builder.Logging.ClearProviders();
 
     // OpenTelemetry
