@@ -35,4 +35,10 @@
     <PackageReference Include="Serilog.Settings.Configuration" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Include="appsettings.HttpIntegrationTest.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>
