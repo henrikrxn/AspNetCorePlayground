@@ -41,7 +41,6 @@ try
 
     Log.Information("Environment: {environmentName}", builder.Environment.EnvironmentName);
 
-    // TODO Add code using this
     // Introduced in .NET 10 validation for Minimal API
     _ = builder.Services.AddValidation();
 
@@ -246,5 +245,8 @@ namespace AspNetCorePlayground
 
         [LoggerMessage(EventId = 103, Level = LogLevel.Information, Message = "Getting configuration")]
         public static partial void GettingConfiguration(this ILogger logger);
+
+        [LoggerMessage(EventId = 104, Level = LogLevel.Information, Message = "Arguments validated")]
+        public static partial void ArgumentsValidated(this ILogger logger);
     }
 }
