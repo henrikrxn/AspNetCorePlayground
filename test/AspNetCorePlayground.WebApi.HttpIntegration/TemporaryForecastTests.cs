@@ -3,13 +3,12 @@ using Microsoft.Extensions.Logging;
 namespace AspNetCorePlayground.WebApi.HttpIntegration;
 
 [Collection(ResumeAppCollectionFixture.Name)]
-public sealed class ApiTests
+public sealed class TemporaryForecastTests
 {
-
     private HttpTestFixture Fixture { get; }
     private ITestOutputHelper TestOutputHelper { get;  }
 
-    public ApiTests(HttpTestFixture fixture, ITestOutputHelper testOutputHelper)
+    public TemporaryForecastTests(HttpTestFixture fixture, ITestOutputHelper testOutputHelper)
     {
         Fixture = fixture;
         TestOutputHelper = testOutputHelper;
