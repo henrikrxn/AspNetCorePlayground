@@ -1,6 +1,7 @@
 using System.Net;
 using System.Security.Cryptography;
 using AspNetCorePlayground.Domain;
+using AspNetCorePlayground.Endpoints;
 using AspNetCorePlayground.Plumbing.Configuration;
 using Microsoft.Extensions.Options;
 
@@ -59,9 +60,15 @@ public static class RegisterApplicationEndpoints
             return list.Items is { Count: > 0 } ? Results.Ok(list.Items) : Results.NotFound("Configuration items not found.");
         });
 
-        _ = app.MapPost("/validation", static (ILogger<Program> logger, GeodeticEarthSurface location) =>
+        _ = app.MapPost("/validation", static (ILogger<Program> logger, GeodeticEarthSurfaceDto locationDto) =>
         {
             logger.ArgumentsValidated();
+
+            var location = new GeodeticEarthSurface
+            {
+                Latitude = locationDto.Latitude ?? throw new ArgumentNullException(nameof(locationDto)),
+                Longitude = locationDto.Longitude ?? throw new ArgumentNullException(nameof(locationDto)),
+            };
         });
 
         return app;

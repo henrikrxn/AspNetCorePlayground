@@ -1,7 +1,6 @@
 using System.Net;
-using AspNetCorePlayground.Domain;
+using AspNetCorePlayground.Endpoints;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Net.Http.Headers;
 
 namespace AspNetCorePlayground.WebApi.HttpIntegration;
 
@@ -14,8 +13,11 @@ public sealed class ValidationTests
     }
 
     private HttpTestFixture Fixture { get; }
-    private static readonly string[] LatitudeError = [$"The field {nameof(GeodeticEarthSurface.Latitude)} must be between -90 and 90."];
-    private static readonly string[] LongitudeError = [$"The field {nameof(GeodeticEarthSurface.Longitude)} must be between -180 and 180."];
+    private readonly string[] LatitudeRangeError = [$"The field {nameof(GeodeticEarthSurfaceDto.Latitude)} must be between -90 and 90."];
+    private readonly string[] LongitudeRangeError = [$"The field {nameof(GeodeticEarthSurfaceDto.Longitude)} must be between -180 and 180."];
+
+    private readonly string[] LatitudeRequiredError = [$"The {nameof(GeodeticEarthSurfaceDto.Latitude)} field is required."];
+    private readonly string[] LongitudeRequiredError = [$"The {nameof(GeodeticEarthSurfaceDto.Longitude)} field is required."];
 
     [Theory]
     [InlineData(0.0, 0.0)]
@@ -55,8 +57,8 @@ public sealed class ValidationTests
         var validationErrors = await response.Content.ReadFromJsonAsync<ValidationProblemDetails>(TestContext.Current.CancellationToken);
         validationErrors.ShouldNotBeNull();
         validationErrors.Errors.Count.ShouldBe(1);
-        validationErrors.Errors.ShouldContainKey(nameof(GeodeticEarthSurface.Latitude));
-        validationErrors.Errors[nameof(GeodeticEarthSurface.Latitude)].ShouldBeEquivalentTo(LatitudeError);
+        validationErrors.Errors.ShouldContainKey(nameof(GeodeticEarthSurfaceDto.Latitude));
+        validationErrors.Errors[nameof(GeodeticEarthSurfaceDto.Latitude)].ShouldBeEquivalentTo(LatitudeRangeError);
     }
 
     [Theory]
@@ -77,8 +79,8 @@ public sealed class ValidationTests
         var validationErrors = await response.Content.ReadFromJsonAsync<ValidationProblemDetails>(TestContext.Current.CancellationToken);
         validationErrors.ShouldNotBeNull();
         validationErrors.Errors.Count.ShouldBe(1);
-        validationErrors.Errors.ShouldContainKey(nameof(GeodeticEarthSurface.Longitude));
-        validationErrors.Errors[nameof(GeodeticEarthSurface.Longitude)].ShouldBeEquivalentTo(LongitudeError);
+        validationErrors.Errors.ShouldContainKey(nameof(GeodeticEarthSurfaceDto.Longitude));
+        validationErrors.Errors[nameof(GeodeticEarthSurfaceDto.Longitude)].ShouldBeEquivalentTo(LongitudeRangeError);
     }
 
     [Fact]
@@ -97,9 +99,57 @@ public sealed class ValidationTests
         var validationErrors = await response.Content.ReadFromJsonAsync<ValidationProblemDetails>(TestContext.Current.CancellationToken);
         validationErrors.ShouldNotBeNull();
         validationErrors.Errors.Count.ShouldBe(2);
-        validationErrors.Errors.ShouldContainKey(nameof(GeodeticEarthSurface.Latitude));
-        validationErrors.Errors[nameof(GeodeticEarthSurface.Latitude)].ShouldBeEquivalentTo(LatitudeError);
-        validationErrors.Errors.ShouldContainKey(nameof(GeodeticEarthSurface.Longitude));
-        validationErrors.Errors[nameof(GeodeticEarthSurface.Longitude)].ShouldBeEquivalentTo(LongitudeError);
+        validationErrors.Errors.ShouldContainKey(nameof(GeodeticEarthSurfaceDto.Latitude));
+        validationErrors.Errors[nameof(GeodeticEarthSurfaceDto.Latitude)].ShouldBeEquivalentTo(LatitudeRangeError);
+        validationErrors.Errors.ShouldContainKey(nameof(GeodeticEarthSurfaceDto.Longitude));
+        validationErrors.Errors[nameof(GeodeticEarthSurfaceDto.Longitude)].ShouldBeEquivalentTo(LongitudeRangeError);
+    }
+
+    [Fact]
+    public async Task WhenLatitudeMissing_ThenReturnsBadRequestWithValidationErrors()
+    {
+        HttpClient client = Fixture.CreateClient();
+        Uri newUri = new("/validation", UriKind.Relative);
+        var jsonBody = """
+                          {
+                              "longitude": 45
+                          }
+                          """;
+        using var content = new StringContent(jsonBody, System.Text.Encoding.UTF8, "application/json");
+
+        // Act
+        using HttpResponseMessage response = await client.PostAsync(newUri, content, TestContext.Current.CancellationToken);
+
+        // Assert
+        response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
+        ValidationProblemDetails? nullableValidationErrors = await response.Content.ReadFromJsonAsync<ValidationProblemDetails>(TestContext.Current.CancellationToken);
+        ValidationProblemDetails validationErrors = nullableValidationErrors.ShouldNotBeNull();
+        validationErrors.Errors.Count.ShouldBe(1);
+        validationErrors.Errors.ShouldContainKey(nameof(GeodeticEarthSurfaceDto.Latitude));
+        validationErrors.Errors[nameof(GeodeticEarthSurfaceDto.Latitude)].ShouldBeEquivalentTo(LatitudeRequiredError);
+    }
+
+    [Fact]
+    public async Task WhenLongitudeMissing_ThenReturnsBadRequestWithValidationErrors()
+    {
+        HttpClient client = Fixture.CreateClient();
+        Uri newUri = new("/validation", UriKind.Relative);
+        var jsonBody = """
+                       {
+                           "latitude": 42
+                       }
+                       """;
+        using var content = new StringContent(jsonBody, System.Text.Encoding.UTF8, "application/json");
+
+        // Act
+        using HttpResponseMessage response = await client.PostAsync(newUri, content, TestContext.Current.CancellationToken);
+
+        // Assert
+        response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
+        ValidationProblemDetails? nullableValidationErrors = await response.Content.ReadFromJsonAsync<ValidationProblemDetails>(TestContext.Current.CancellationToken);
+        ValidationProblemDetails validationErrors = nullableValidationErrors.ShouldNotBeNull();
+        validationErrors.Errors.Count.ShouldBe(1);
+        validationErrors.Errors.ShouldContainKey(nameof(GeodeticEarthSurfaceDto.Longitude));
+        validationErrors.Errors[nameof(GeodeticEarthSurfaceDto.Longitude)].ShouldBeEquivalentTo(LongitudeRequiredError);
     }
 }
