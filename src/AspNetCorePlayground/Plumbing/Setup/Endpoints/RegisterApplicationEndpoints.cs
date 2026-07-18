@@ -71,6 +71,14 @@ public static class RegisterApplicationEndpoints
             };
         });
 
+        // TODO .NET 11 If a later preview adds a MapQuery method then use that
+        _ = app.MapMethods("/search", ["QUERY"], (SearchRequest request) =>
+        {
+            var result = new SearchResponse($"Product{request.ProductNumber}");
+
+            return TypedResults.Ok(result);
+        });
+
         return app;
 
     }
