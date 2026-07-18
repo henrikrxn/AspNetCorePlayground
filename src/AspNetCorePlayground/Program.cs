@@ -92,9 +92,9 @@ try
         logging.CombineLogs = true;
     });
 
-    _ = builder.Host.UseSerilog((hostBuilderContext, serviceProvider, seriLogloggerConfiguration) =>
+    _ = builder.Host.UseSerilog((hostBuilderContext, serviceProvider, serilogConfiguration) =>
     {
-        _ = seriLogloggerConfiguration
+        _ = serilogConfiguration
             .ReadFrom.Configuration(hostBuilderContext.Configuration)
             .ReadFrom.Services(serviceProvider)
             .Enrich.WithProperty(SerilogProperties.EnvironmentName, hostBuilderContext.HostingEnvironment.EnvironmentName)
@@ -110,7 +110,7 @@ try
             // as console historically has been known to slow things down a lot
 
             // Console is terribly ineffective, so limiting to the really terrible stuff
-            _ = seriLogloggerConfiguration.WriteTo.Console(outputTemplate: SerilogTemplates.IncludesProperties,
+            _ = serilogConfiguration.WriteTo.Console(outputTemplate: SerilogTemplates.IncludesProperties,
                 restrictedToMinimumLevel: LogEventLevel.Error);
         }
         else
@@ -118,7 +118,7 @@ try
             Log.Information("Setting up Serilog for Environment: '{environmentName}'",
                 hostBuilderContext.HostingEnvironment.EnvironmentName);
 
-            _ = seriLogloggerConfiguration.WriteTo.Console(outputTemplate: SerilogTemplates.IncludesProperties);
+            _ = serilogConfiguration.WriteTo.Console(outputTemplate: SerilogTemplates.IncludesProperties);
         }
     }, writeToProviders: !builder.Environment.IsEnvironment(MyAdditionalEnvironments.HttpIntegrationTest));
 
@@ -171,7 +171,7 @@ try {
 
     _ = app.UseHttpsRedirection(); // TODO Some sources say not to use this. Investigate....
 
-    // Before or after CORS ? : app.UseStaticFiles();
+    // Should app.UseStaticFiles(); go before or after CORS ?
 
     // This must be before CORS : app.UseRouting();
 
