@@ -35,6 +35,9 @@ WebApplicationBuilder? builder;
 
 try
 {
+    // Set the switch before doing anything else. In .NET 11 this will be false by default
+    AppContext.SetSwitch("Microsoft.AspNetCore.Hosting.SuppressActivityOpenTelemetryData", false);
+
     Log.Information("Creating WebApplication builder");
 
     builder = WebApplication.CreateBuilder(args);
