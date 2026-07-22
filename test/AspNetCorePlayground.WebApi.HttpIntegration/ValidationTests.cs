@@ -1,4 +1,5 @@
 using System.Net;
+using System.Net.Mime;
 using AspNetCorePlayground.Endpoints;
 using Microsoft.AspNetCore.Mvc;
 
@@ -115,7 +116,7 @@ public sealed class ValidationTests
                               "longitude": 45
                           }
                           """;
-        using var content = new StringContent(jsonBody, System.Text.Encoding.UTF8, "application/json");
+        using var content = new StringContent(jsonBody, System.Text.Encoding.UTF8, MediaTypeNames.Application.Json);
 
         // Act
         using HttpResponseMessage response = await client.PostAsync(newUri, content, TestContext.Current.CancellationToken);
@@ -139,7 +140,7 @@ public sealed class ValidationTests
                            "latitude": 42
                        }
                        """;
-        using var content = new StringContent(jsonBody, System.Text.Encoding.UTF8, "application/json");
+        using var content = new StringContent(jsonBody, System.Text.Encoding.UTF8, MediaTypeNames.Application.Json);
 
         // Act
         using HttpResponseMessage response = await client.PostAsync(newUri, content, TestContext.Current.CancellationToken);
