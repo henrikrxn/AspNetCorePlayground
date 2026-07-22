@@ -133,13 +133,7 @@ try
     // Add services to the container.
     // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
     _ = builder.Services.AddEndpointsApiExplorer();
-    _ = builder.Services.AddOpenApi(options =>
-        {
-            // Added for Preview 2
-            // Can be removed when getting to Preview 6 where this becomes default
-            options.OpenApiVersion = Microsoft.OpenApi.OpenApiSpecVersion.OpenApi3_2;
-        }
-    );
+    _ = builder.Services.AddOpenApi();
 
     Log.Information("Building application");
 }
