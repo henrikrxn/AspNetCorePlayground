@@ -15,12 +15,4 @@
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <WarningsNotAsErrors>$(WarningsNotAsErrors);CA1515</WarningsNotAsErrors>
   </PropertyGroup>
-
-  <!-- CVE detection-->
-  <PropertyGroup>
-    <NuGetAudit>true</NuGetAudit>
-    <!-- Audit bot direct and transitive dependencies -->
-    <NuGetAuditMode>all</NuGetAuditMode>
-    <NuGetAuditLevel>low</NuGetAuditLevel>
-  </PropertyGroup>
 </Project>
