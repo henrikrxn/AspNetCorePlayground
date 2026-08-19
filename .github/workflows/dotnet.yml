@@ -48,3 +48,4 @@ jobs:
           test/**/*_net10.0_x64.log
           test/TestResults/merged-coverage.cobertura.xml
           test/**/coverage.cobertura.xml
+          test/TestResults/*.html
