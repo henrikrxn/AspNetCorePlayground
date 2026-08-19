@@ -34,7 +34,7 @@ jobs:
     - name: Build
       run: dotnet build --no-restore --check
     - name: Run tests
-      run: dotnet test --no-restore --no-build --verbosity normal --report-gh --coverage --coverage-output-format cobertura --coverage-output coverage.cobertura.xml
+      run: dotnet test --no-restore --no-build --verbosity normal --report-html --report-gh --coverage --coverage-output-format cobertura --coverage-output coverage.cobertura.xml
     - name: Install tools for test coverage reporting
       run: dotnet tool restore
     - name: Merge cobertura files
