@@ -40,7 +40,7 @@ jobs:
     - name: Merge cobertura files
       run: dotnet coverage merge ./TestResults/*.cobertura.xml --output-format cobertura --output ./TestResults/merged-coverage.cobertura.xml
     - name: Convert Cobertura report to HTML
-      run: dotnet reportgenerator -reports:"./TestResults/merged-coverage.cobertura.xml" -targetdir:"./TestResults" -reporttypes:Html
+      run: dotnet reportgenerator -reports:"./TestResults/merged-coverage.cobertura.xml" -targetdir:"./TestResults/CoverageHTML" -reporttypes:Html
     - name: Upload a build artifact
       if: always()
       uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
@@ -51,3 +51,4 @@ jobs:
           ./TestResults/merged-coverage.cobertura.xml
           ./TestResults/*.cobertura.xml
           ./TestResults/*.html
+          ./TestResults/CoverageHTML/*
