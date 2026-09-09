@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace AspNetCorePlayground.Endpoints;
 
-public class GeodeticEarthSurfaceDto
+public sealed record GeodeticEarthSurfaceDto
 {
     [Required]
     [Range(-90.0,90.0)]

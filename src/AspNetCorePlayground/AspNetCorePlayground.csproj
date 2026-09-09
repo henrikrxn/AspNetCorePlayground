@@ -8,6 +8,7 @@
 
   <PropertyGroup Label="OpenApi configuration">
     <OpenApiGenerateDocuments>true</OpenApiGenerateDocuments>
+    <OpenApiGenerationEnvironment>Release</OpenApiGenerationEnvironment>
     <OpenApiGenerateDocumentsOptions>--file-name v1</OpenApiGenerateDocumentsOptions>
     <OpenApiDocumentsDirectory>$(MSBuildProjectDirectory)/build/openapi</OpenApiDocumentsDirectory>
   </PropertyGroup>
