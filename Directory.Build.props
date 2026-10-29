@@ -1,11 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project>
   <PropertyGroup>
-    <TargetFramework>net10.0</TargetFramework>
+    <TargetFramework>net11.0</TargetFramework>
+    <!-- When using Previews (and possible RCs) then removed comments
     <LangVersion>preview</LangVersion>
+    -->
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <Deterministic>true</Deterministic>
+    <!-- .NET 11 introduced the new runtime based async implementation,
+         which in .NET 11 is opt-in
+         TODO: Remove once runtime async becomes the default (In .NET 12?)
+    -->
+    <Features>$(Features);runtime-async=on</Features>
   </PropertyGroup>
 
   <!-- Enable code analysis + Warnings as errors -->

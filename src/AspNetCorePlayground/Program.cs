@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Globalization;
 using AspNetCorePlayground;
 using AspNetCorePlayground.Plumbing;
 using AspNetCorePlayground.Plumbing.Setup.Configuration;
@@ -23,7 +24,7 @@ if (Log.Logger == Serilog.Core.Logger.None)
         .Enrich.WithEnvironmentName() // This only looks at the environment variables, which is not good for e.g. HTTP integration tests
         .Enrich.WithMachineName()
         .Enrich.WithProcessId()
-        .WriteTo.Console(outputTemplate: "[{Timestamp:HH:mm:ss} {Level:u3}] {Message:lj}{NewLine}{Properties:j}{NewLine}{Exception}")
+        .WriteTo.Console(outputTemplate: "[{Timestamp:HH:mm:ss} {Level:u3}] {Message:lj}{NewLine}{Properties:j}{NewLine}{Exception}", formatProvider: CultureInfo.InvariantCulture)
         .CreateBootstrapLogger();
 }
 else
@@ -92,9 +93,9 @@ try
         logging.CombineLogs = true;
     });
 
-    _ = builder.Host.UseSerilog((hostBuilderContext, serviceProvider, seriLogloggerConfiguration) =>
+    _ = builder.Host.UseSerilog((hostBuilderContext, serviceProvider, serilogConfiguration) =>
     {
-        _ = seriLogloggerConfiguration
+        _ = serilogConfiguration
             .ReadFrom.Configuration(hostBuilderContext.Configuration)
             .ReadFrom.Services(serviceProvider)
             .Enrich.WithProperty(SerilogProperties.EnvironmentName, hostBuilderContext.HostingEnvironment.EnvironmentName)
@@ -110,15 +111,17 @@ try
             // as console historically has been known to slow things down a lot
 
             // Console is terribly ineffective, so limiting to the really terrible stuff
-            _ = seriLogloggerConfiguration.WriteTo.Console(outputTemplate: SerilogTemplates.IncludesProperties,
-                restrictedToMinimumLevel: LogEventLevel.Error);
+            _ = serilogConfiguration.WriteTo.Console(
+                    outputTemplate: SerilogTemplates.IncludesProperties,
+                    formatProvider: CultureInfo.InvariantCulture,
+                    restrictedToMinimumLevel: LogEventLevel.Error);
         }
         else
         {
             Log.Information("Setting up Serilog for Environment: '{environmentName}'",
                 hostBuilderContext.HostingEnvironment.EnvironmentName);
 
-            _ = seriLogloggerConfiguration.WriteTo.Console(outputTemplate: SerilogTemplates.IncludesProperties);
+            _ = serilogConfiguration.WriteTo.Console(outputTemplate: SerilogTemplates.IncludesProperties, formatProvider: CultureInfo.InvariantCulture);
         }
     }, writeToProviders: !builder.Environment.IsEnvironment(MyAdditionalEnvironments.HttpIntegrationTest));
 
@@ -171,7 +174,7 @@ try {
 
     _ = app.UseHttpsRedirection(); // TODO Some sources say not to use this. Investigate....
 
-    // Before or after CORS ? : app.UseStaticFiles();
+    // Should app.UseStaticFiles(); go before or after CORS ?
 
     // This must be before CORS : app.UseRouting();
 
