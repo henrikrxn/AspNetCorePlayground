@@ -8,6 +8,11 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <Deterministic>true</Deterministic>
+    <!-- .NET 11 introduced the new runtime based async implementation,
+         which in .NET 11 is opt-in
+         TODO: Remove once runtime async becomes the default (In .NET 12?)
+    -->
+    <Features>$(Features);runtime-async=on</Features>
   </PropertyGroup>
 
   <!-- Enable code analysis + Warnings as errors -->
