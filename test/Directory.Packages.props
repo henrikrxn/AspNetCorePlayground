@@ -2,8 +2,8 @@
 <Project>
   <Import Project="$([MSBuild]::GetPathOfFileAbove(Directory.Packages.props, $(MSBuildThisFileDirectory)../))" />
   <ItemGroup>
-    <PackageVersion Include="Microsoft.Testing.Extensions.GitHubActionsReport" Version="2.4.1" />
-    <PackageVersion Include="Microsoft.Testing.Extensions.HtmlReport" Version="2.4.1" />
+    <PackageVersion Include="Microsoft.Testing.Extensions.GitHubActionsReport" Version="2.5.2" />
+    <PackageVersion Include="Microsoft.Testing.Extensions.HtmlReport" Version="2.5.2" />
     <PackageVersion Include="NSubstitute" Version="6.2.0" />
     <PackageVersion Include="NSubstitute.Analyzers.CSharp" Version="1.0.17" />
     <PackageVersion Include="Shouldly" Version="4.3.0" />
