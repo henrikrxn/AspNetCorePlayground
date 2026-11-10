@@ -11,6 +11,6 @@
     <PackageVersion Include="OpenTelemetry.Extensions.Hosting" Version="1.20.1" />
     <PackageVersion Include="OpenTelemetry.Instrumentation.AspNetCore" Version="1.20.2" />
     <PackageVersion Include="OpenTelemetry.Instrumentation.Http" Version="1.20.2" />
-    <PackageVersion Include="Swashbuckle.AspNetCore.SwaggerUi" Version="11.0.0" />
+    <PackageVersion Include="Scalar.AspNetCore" Version="2.20.0" />
   </ItemGroup>
 </Project>
