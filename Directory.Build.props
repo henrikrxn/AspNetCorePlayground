@@ -5,7 +5,6 @@
     <!-- When using Previews (and possible RCs) then removed comments
     <LangVersion>preview</LangVersion>
     -->
-    <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <Deterministic>true</Deterministic>
     <!-- .NET 11 introduced the new runtime based async implementation,
@@ -19,7 +18,12 @@
   <PropertyGroup>
     <WarningLevel>9999</WarningLevel> <!-- All warnings -->
     <AnalysisLevel>latest-all</AnalysisLevel>
+    <!-- Treat warnings as errors in general -->
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <WarningsNotAsErrors>$(WarningsNotAsErrors);CA1515</WarningsNotAsErrors>
+    <!-- Nullable settings from https://blog.ndepend.com/c-nullable-types-explained/ -->
+    <WarningsAsErrors>$(WarningsAsErrors);nullable</WarningsAsErrors>
+    <!-- disable, annotations, warnings, enable = All = Annotations + Warnings -->
+    <Nullable>enable</Nullable>
   </PropertyGroup>
 </Project>
